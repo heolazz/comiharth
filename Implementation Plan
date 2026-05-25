@@ -1,0 +1,116 @@
+# Implementation Plan: Manga/Manhwa/Manhua Web Reader (NekoRead)
+
+This blueprint outlines the architecture, database schema, API contracts, and visual design systems for bootstrapping the Next.js Web Reader at `H:\Entertainment\Playground\manga-reader`.
+
+---
+
+## 🛠️ Architecture & Core Stack
+
+```mermaid
+graph TD
+    Browser[User Browser]
+    NextApp[Next.js App Router Frontend]
+    NextAPI[Next.js API Route Handlers]
+    Adapter[Provider Adapter Layer]
+    MF_Wrapper[MangaFire API Scraper Service]
+    MF_Source[MangaFire Web]
+    DB[(Supabase PostgreSQL)]
+
+    Browser -->|Interacts| NextApp
+    NextApp -->|Fetches| NextAPI
+    NextAPI -->|Adapter Pattern| Adapter
+    Adapter -->|Request| MF_Wrapper
+    MF_Wrapper -->|Scrapes| MF_Source
+    NextAPI -->|Reads/Writes| DB
+```
+
+### 1. Technology Stack
+* **Framework**: Next.js 15+ (App Router)
+* **Language**: TypeScript
+* **Styling**: Tailwind CSS (v3 or v4) + Vanilla CSS core configurations
+* **Components**: shadcn/ui + Framer Motion (micro-animations) + Lucide React
+* **Theme**: `next-themes` (Dark-first premium styling)
+* **Database & Auth**: Supabase PostgreSQL + Supabase Auth
+
+---
+
+## 🗃️ Database Schema (Supabase PostgreSQL / Prisma)
+
+### Favorites Table
+Stores the user's bookmarks/library.
+```sql
+create table favorites (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade,
+  provider text not null,
+  comic_id text not null,
+  title text not null,
+  cover text,
+  type text,
+  status text,
+  created_at timestamp with time zone default now(),
+  unique(user_id, provider, comic_id)
+);
+```
+
+### Reading History Table
+Stores current reading progress per manga.
+```sql
+create table reading_history (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade,
+  provider text not null,
+  comic_id text not null,
+  comic_title text not null,
+  comic_cover text,
+  chapter_id text not null,
+  chapter_title text,
+  chapter_number text,
+  page_index int default 0,
+  progress numeric default 0,
+  last_read_at timestamp with time zone default now(),
+  unique(user_id, provider, comic_id)
+);
+```
+
+---
+
+## 🎨 Visual Identity & Theme System
+
+To create a **premium cinematic dark manga reader** feeling, we will use the following curated palette:
+
+| Token | HSL / Hex Value | Description |
+| :--- | :--- | :--- |
+| **Background** | `hsl(240 10% 3.9%)` / `#050505` | Deep slate-black, highly immersive |
+| **Surface** | `hsl(240 10% 6%)` / `#111111` | Soft contrast surface for cards |
+| **Surface Hover**| `hsl(240 5.9% 10%)` / `#18181B`| Elevated component backgrounds |
+| **Accent Blue** | `hsl(217.2 91.2% 59.8%)` / `#3B82F6` | Primary action and interactive states |
+| **Foreground** | `hsl(0 0% 98%)` / `#FAFAFA` | Highly legible primary text |
+| **Muted Text** | `hsl(240 5% 64.9%)` / `#A1A1AA` | Secondary data, metadata tags |
+
+---
+
+## 🚀 Step-by-Step Implementation Roadmap
+
+```mermaid
+gantt
+    title Roadmap - NekoRead Implementation
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Setup
+    Bootstrap Next.js Project      :active, 2026-05-25, 1d
+    Tailwind & shadcn integration  : 2026-05-26, 1d
+    section Phase 2: Providers
+    MangaFire Provider Adapter     : 2026-05-27, 2d
+    Internal Next.js API Routes    : 2026-05-29, 1d
+    section Phase 3: Core UI
+    Search & Comic Detail UI       : 2026-05-30, 2d
+    Vertical Scroll Reader Page    : 2026-06-01, 2d
+    section Phase 4: Auth & Library
+    Supabase DB & Auth Integration : 2026-06-03, 2d
+    Reading History & Continue     : 2026-06-05, 1d
+```
+
+### Next Actions:
+1. **Confirm Tailwind CSS Version**: Confirm if you want **Tailwind CSS v4 (newest first-class CSS configurations)** or **Tailwind CSS v3 (standard classic utility styles)**.
+2. **Execute create-next-app**: Run the bootstrap command directly targeting `H:\Entertainment\Playground\manga-reader`.
+3. **Configure Providers**: Scaffold the provider adapters (`lib/providers`) to ensure flexible multi-source configuration.

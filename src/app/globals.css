@@ -1,26 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-accent-green: var(--accent-green);
+  --color-muted-text: var(--muted-text);
+  --color-border-dark: var(--border-color);
+  
+  --font-sans: 'Plus Jakarta Sans', 'Outfit', var(--font-sans);
+  --font-display: 'Outfit', var(--font-sans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  /* Fresh & Clean Webtoon Theme */
+  --background: #FAFAFA;
+  --foreground: #111111;
+  --surface: #FFFFFF;
+  --surface-hover: #F5F5F7;
+  --accent-green: #00C853; /* Official Webtoon Green */
+  --muted-text: #666666;
+  --border-color: #E2E8F0;
+  
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+}
+
+.dark {
+  /* Premium Dark Webtoon Theme */
+  --background: #090B0A;
+  --foreground: #F5F5F7;
+  --surface: #121513;
+  --surface-hover: #191E1B;
+  --accent-green: #00E676; /* Bright Green for Dark Mode */
+  --muted-text: #999999;
+  --border-color: #232925;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Slim custom responsive scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-green);
+}
+
+/* Glassmorphism utility adaptation */
+.glass {
+  background: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+}
+
+/* Webtoon branding glowing shadows */
+.glow-green {
+  box-shadow: 0 0 35px rgba(0, 200, 83, 0.15);
+}
+
+.glow-green-sm {
+  box-shadow: 0 0 20px rgba(0, 200, 83, 0.08);
+}
+
+/* Hide scrollbar utility */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
