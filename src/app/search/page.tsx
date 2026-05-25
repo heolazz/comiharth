@@ -13,26 +13,34 @@ function SearchContent() {
   const providerParam = searchParams.get("provider") || "shinigami";
   const pageParam = parseInt(searchParams.get("page") || "1", 10);
   const formatParam = searchParams.get("format") || "all";
+  const genreParam = searchParams.get("genre") || "all";
+  const statusParam = searchParams.get("status") || "all";
+  const sortParam = searchParams.get("sort") || "latest";
 
   const [inputVal, setInputVal] = useState(query);
   const [activeProvider, setActiveProvider] = useState(providerParam);
   const [currentPage, setCurrentPage] = useState(pageParam);
   const [selectedType, setSelectedType] = useState<string>(formatParam);
+  const [selectedGenre, setSelectedGenre] = useState<string>(genreParam);
+  const [selectedStatus, setSelectedStatus] = useState<string>(statusParam);
+  const [sortBy, setSortBy] = useState<string>(sortParam);
   const [results, setResults] = useState<ComicSearchResult[]>([]);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Filter & Sort States
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("relevance");
 
   // Sync states when URL parameters change
   useEffect(() => {
     setActiveProvider(providerParam);
     setCurrentPage(pageParam);
     setSelectedType(formatParam);
-  }, [providerParam, pageParam, formatParam]);
+    setSelectedGenre(genreParam);
+    setSelectedStatus(statusParam);
+    setSortBy(sortParam);
+  }, [providerParam, pageParam, formatParam, genreParam, statusParam, sortParam]);
 
   useEffect(() => {
     setInputVal(query);
@@ -43,13 +51,14 @@ function SearchContent() {
       try {
         const searchVal = query.trim() || "a";
         const res = await fetch(
-          `/api/search?q=${encodeURIComponent(searchVal)}&provider=${activeProvider}&page=${currentPage}&format=${selectedType}`
+          `/api/search?q=${encodeURIComponent(searchVal)}&provider=${activeProvider}&page=${currentPage}&format=${selectedType}&genre=${selectedGenre}&status=${selectedStatus}&sort=${sortBy}`
         );
         
         if (res.ok) {
           const json = await res.json();
           if (json.success) {
             setResults(json.data);
+            setTotalCount(json.totalCount ?? null);
           } else {
             setError(json.error?.message || "Search failed");
           }
@@ -64,59 +73,54 @@ function SearchContent() {
     };
 
     performSearch();
-  }, [query, activeProvider, currentPage, selectedType]);
+  }, [query, activeProvider, currentPage, selectedType, selectedGenre, selectedStatus, sortBy]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${activeProvider}&page=1&format=${selectedType}`);
+    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${activeProvider}&page=1&format=${selectedType}&genre=${selectedGenre}&status=${selectedStatus}&sort=${sortBy}`);
   };
 
   const handleProviderChange = (prov: string) => {
     setActiveProvider(prov);
-    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${prov}&page=1&format=${selectedType}`);
+    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${prov}&page=1&format=${selectedType}&genre=${selectedGenre}&status=${selectedStatus}&sort=${sortBy}`);
   };
 
   const handlePageChange = (newPage: number) => {
-    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=${newPage}&format=${selectedType}`);
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=${newPage}&format=${selectedType}&genre=${selectedGenre}&status=${selectedStatus}&sort=${sortBy}`);
   };
 
   const handleTypeChange = (t: string) => {
-    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=1&format=${t}`);
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=1&format=${t}&genre=${selectedGenre}&status=${selectedStatus}&sort=${sortBy}`);
+  };
+
+  const handleGenreChange = (g: string) => {
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=1&format=${selectedType}&genre=${g}&status=${selectedStatus}&sort=${sortBy}`);
+  };
+
+  const handleStatusChange = (s: string) => {
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=1&format=${selectedType}&genre=${selectedGenre}&status=${s}&sort=${sortBy}`);
+  };
+
+  const handleSortChange = (so: string) => {
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=1&format=${selectedType}&genre=${selectedGenre}&status=${selectedStatus}&sort=${so}`);
   };
 
   const handleResetFilters = () => {
     setSelectedStatus("all");
-    setSortBy("relevance");
-    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=1&format=all`);
+    setSortBy("latest");
+    setSelectedGenre("all");
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=1&format=all&genre=all&status=all&sort=latest`);
   };
-
-  // ⚡ Client-side Instant Filter & Sort calculation
-  const processedResults = useMemo(() => {
-    let list = [...results];
-
-    // 1. Filter by Status
-    if (selectedStatus !== "all") {
-      list = list.filter((item) => item.status === selectedStatus);
-    }
-
-    // 2. Apply Sorting
-    if (sortBy === "title-asc") {
-      list.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sortBy === "title-desc") {
-      list.sort((a, b) => b.title.localeCompare(a.title));
-    }
-
-    return list;
-  }, [results, selectedStatus, sortBy]);
 
   // Active filter counter
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (selectedType !== "all") count++;
+    if (selectedGenre !== "all") count++;
     if (selectedStatus !== "all") count++;
-    if (sortBy !== "relevance") count++;
+    if (sortBy !== "latest") count++;
     return count;
-  }, [selectedType, selectedStatus, sortBy]);
+  }, [selectedType, selectedGenre, selectedStatus, sortBy]);
 
   // Dynamic Pagination Boundary: Shinigami serves 24 items per page
   const hasNextPage = results.length === 24;
@@ -136,39 +140,7 @@ function SearchContent() {
           </p>
         </div>
 
-        {/* Dynamic Provider Toggle Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-surface border border-border-dark/40 self-start shadow-sm">
-          <button
-            onClick={() => handleProviderChange("shinigami")}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeProvider === "shinigami"
-                ? "bg-accent-green text-white shadow-sm"
-                : "text-muted-text hover:text-foreground"
-            }`}
-          >
-            Shinigami (Indonesian)
-          </button>
-          <button
-            onClick={() => handleProviderChange("mangadex")}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeProvider === "mangadex"
-                ? "bg-accent-green text-white shadow-sm"
-                : "text-muted-text hover:text-foreground"
-            }`}
-          >
-            MangaDex (English)
-          </button>
-          <button
-            onClick={() => handleProviderChange("mangafire")}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeProvider === "mangafire"
-                ? "bg-accent-green text-white shadow-sm"
-                : "text-muted-text hover:text-foreground"
-            }`}
-          >
-            MangaFire (Local)
-          </button>
-        </div>
+        {/* Provider Toggle Pills Removed as requested */}
       </div>
 
       {/* Input Box & Filter Toggle */}
@@ -208,96 +180,142 @@ function SearchContent() {
         </button>
       </div>
 
-      {/* Expandable Glassmorphic Filter Drawer */}
+      {/* Premium Filter Drawer */}
       {showFilters && (
-        <div className="glass rounded-2xl p-6 flex flex-col gap-6 glow-green-sm animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className="flex items-center justify-between border-b border-border-dark/40 pb-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
-              Filter Catalog
-            </h3>
+        <div className="relative overflow-hidden rounded-3xl bg-surface/40 backdrop-blur-xl border border-border-dark/60 p-6 md:p-8 flex flex-col gap-8 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm">
+          
+          {/* Decorative gradients */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-accent-green/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent-green/5 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+
+          <div className="relative z-10 flex items-center justify-between border-b border-border-dark/40 pb-5">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-full bg-accent-green/20 flex items-center justify-center border border-accent-green/30">
+                <SlidersHorizontal className="h-4.5 w-4.5 text-accent-green" />
+              </div>
+              <h3 className="text-sm md:text-base font-display font-extrabold uppercase tracking-widest text-foreground">
+                Advanced Filtering
+              </h3>
+            </div>
             {activeFiltersCount > 0 && (
               <button
                 onClick={handleResetFilters}
-                className="flex items-center gap-1.5 text-[10px] font-bold text-red-400 hover:text-red-500 transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-bold text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-all cursor-pointer"
               >
-                <RotateCcw className="h-3 w-3" />
+                <RotateCcw className="h-3.5 w-3.5" />
                 Reset Filters
               </button>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="relative z-10 flex flex-col gap-8">
             
-            {/* Format (Type) Filter */}
-            <div className="flex flex-col gap-2.5">
-              <span className="text-[10px] font-extrabold text-muted-text uppercase tracking-widest">
-                Format
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {["all", "manga", "manhwa", "manhua"].map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => handleTypeChange(t)}
-                    className={`h-9 px-4 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer flex items-center gap-1.5 ${
-                      selectedType === t
-                        ? "bg-accent-green/10 border-accent-green text-accent-green border"
-                        : "bg-surface-hover/50 text-muted-text border border-border-dark/40 hover:text-foreground"
-                    }`}
-                  >
-                    {selectedType === t && <Check className="h-3 w-3" />}
-                    {t}
-                  </button>
-                ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+              {/* Format Filter */}
+              <div className="flex flex-col gap-3.5">
+                <span className="flex items-center gap-2 text-[11px] font-extrabold text-muted-text uppercase tracking-widest">
+                  Comic Format
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: "all", label: "All Formats" },
+                    { id: "manga", label: "Manga (JP)" },
+                    { id: "manhwa", label: "Manhwa (KR)" },
+                    { id: "manhua", label: "Manhua (CN)" },
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => handleTypeChange(t.id)}
+                      className={`h-10 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                        selectedType === t.id
+                          ? "bg-accent-green text-white"
+                          : "bg-background/80 border border-border-dark/60 text-muted-text hover:bg-surface-hover hover:text-foreground hover:border-border-dark"
+                      }`}
+                    >
+                      {selectedType === t.id && <Check className="h-3.5 w-3.5" />}
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Status Filter */}
+              <div className="flex flex-col gap-3.5">
+                <span className="flex items-center gap-2 text-[11px] font-extrabold text-muted-text uppercase tracking-widest">
+                  Release Status
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {["all", "ongoing", "completed"].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => handleStatusChange(s)}
+                      className={`h-10 px-4 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer flex items-center gap-2 ${
+                        selectedStatus === s
+                          ? "bg-accent-green text-white"
+                          : "bg-background/80 border border-border-dark/60 text-muted-text hover:bg-surface-hover hover:text-foreground hover:border-border-dark"
+                      }`}
+                    >
+                      {selectedStatus === s && <Check className="h-3.5 w-3.5" />}
+                      {s}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Status Filter */}
-            <div className="flex flex-col gap-2.5">
-              <span className="text-[10px] font-extrabold text-muted-text uppercase tracking-widest">
-                Status
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {["all", "ongoing", "completed"].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSelectedStatus(s)}
-                    className={`h-9 px-4 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer flex items-center gap-1.5 ${
-                      selectedStatus === s
-                        ? "bg-accent-green/10 border-accent-green text-accent-green border"
-                        : "bg-surface-hover/50 text-muted-text border border-border-dark/40 hover:text-foreground"
-                    }`}
-                  >
-                    {selectedStatus === s && <Check className="h-3 w-3" />}
-                    {s}
-                  </button>
-                ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+              {/* Sorting Filter */}
+              <div className="flex flex-col gap-3.5">
+                <span className="flex items-center gap-2 text-[11px] font-extrabold text-muted-text uppercase tracking-widest">
+                  Sort Results
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { value: "latest", label: "Recently Updated" },
+                    { value: "relevance", label: "Relevance" },
+                    { value: "title-asc", label: "Title A-Z" },
+                    { value: "title-desc", label: "Title Z-A" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => handleSortChange(opt.value)}
+                      className={`h-10 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                        sortBy === opt.value
+                          ? "bg-accent-green text-white"
+                          : "bg-background/80 border border-border-dark/60 text-muted-text hover:bg-surface-hover hover:text-foreground hover:border-border-dark"
+                      }`}
+                    >
+                      {sortBy === opt.value && <Check className="h-3.5 w-3.5" />}
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Sorting Filter */}
-            <div className="flex flex-col gap-2.5">
-              <span className="text-[10px] font-extrabold text-muted-text uppercase tracking-widest">
-                Sort Results
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  { value: "relevance", label: "Relevance" },
-                  { value: "title-asc", label: "Title A-Z" },
-                  { value: "title-desc", label: "Title Z-A" },
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => setSortBy(opt.value)}
-                    className={`h-9 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                      sortBy === opt.value
-                        ? "bg-accent-green/10 border-accent-green text-accent-green border"
-                        : "bg-surface-hover/50 text-muted-text border border-border-dark/40 hover:text-foreground"
-                    }`}
-                  >
-                    <ArrowUpDown className="h-3 w-3 opacity-60" />
-                    {opt.label}
-                  </button>
-                ))}
+              {/* Genre Filter */}
+              <div className="flex flex-col gap-3.5">
+                <span className="flex items-center gap-2 text-[11px] font-extrabold text-muted-text uppercase tracking-widest">
+                  Genres
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "all", "action", "adventure", "comedy", "drama", 
+                    "fantasy", "romance", "sci-fi", "isekai", "slice-of-life", "thriller"
+                  ].map((g) => (
+                    <button
+                      key={g}
+                      onClick={() => handleGenreChange(g)}
+                      className={`h-9 px-3 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer flex items-center gap-1.5 ${
+                        selectedGenre === g
+                          ? "bg-accent-green text-white"
+                          : "bg-background/80 border border-border-dark/60 text-muted-text hover:bg-surface-hover hover:text-foreground hover:border-border-dark"
+                      }`}
+                    >
+                      {selectedGenre === g && <Check className="h-3 w-3" />}
+                      {g.replace("-", " ")}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -320,7 +338,7 @@ function SearchContent() {
         </div>
 
         <div>
-          Found <span className="text-foreground font-extrabold">{processedResults.length}</span> titles
+          Found <span className="text-foreground font-extrabold">{totalCount ? (totalCount >= 1000 ? "1000+" : totalCount) : results.length}</span> titles
         </div>
       </div>
 
@@ -334,7 +352,7 @@ function SearchContent() {
         <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-center text-sm text-red-400">
           {error}
         </div>
-      ) : processedResults.length === 0 ? (
+      ) : results.length === 0 ? (
         <div className="rounded-2xl border border-border-dark/40 bg-surface/30 p-12 text-center flex flex-col items-center gap-2">
           <Search className="h-8 w-8 text-muted-text/40" />
           <p className="text-sm text-muted-text font-bold">No results matches your criteria.</p>
@@ -344,7 +362,7 @@ function SearchContent() {
         </div>
       ) : (
         <>
-          <ComicGrid comics={processedResults} />
+          <ComicGrid comics={results} />
 
           {/* Premium Pagination Component Shelf */}
           <div className="mt-8 flex items-center justify-center gap-4 border-t border-border-dark/20 pt-8">
