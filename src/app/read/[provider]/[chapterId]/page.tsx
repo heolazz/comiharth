@@ -6,7 +6,7 @@ import { ChapterPages, Chapter, ComicDetail } from "@/lib/providers/types";
 import ReaderToolbar from "@/components/reader/ReaderToolbar";
 import ReaderSettings, { ReaderPreferences } from "@/components/reader/ReaderSettings";
 import ChapterNavigation from "@/components/reader/ChapterNavigation";
-import { Loader2, ArrowLeft, ArrowRight, RefreshCw } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight, RefreshCw, Play, Pause, SkipBack, SkipForward, Plus, Minus, Maximize, Minimize, ChevronUp } from "lucide-react";
 
 export default function ReaderPage({
   params,
@@ -29,9 +29,18 @@ export default function ReaderPage({
     theme: "white", // default to white for fresh and clean Webtoon style
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+
+  // Auto Scroll States
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const [autoScrollSpeed, setAutoScrollSpeed] = useState(1);
 
   // Single Page Mode Track
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+
+  // Scroll Progress & Fullscreen
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Parse comic ID from chapter ID
   let comicId = "solo-leveling";
@@ -55,6 +64,86 @@ export default function ReaderPage({
       }
     }
   }, []);
+
+  // Auto Scroll Loop
+  useEffect(() => {
+    let animationFrameId: number;
+    let lastTime = performance.now();
+
+    const scrollStep = (time: number) => {
+      if (isAutoScrolling && preferences.mode === "vertical") {
+        const deltaTime = time - lastTime;
+        // Base speed roughly 60px per second * multiplier
+        const pixelsToScroll = (60 * autoScrollSpeed * deltaTime) / 1000; 
+        window.scrollBy({ top: pixelsToScroll, behavior: "instant" });
+      }
+      lastTime = time;
+      if (isAutoScrolling) {
+        animationFrameId = requestAnimationFrame(scrollStep);
+      }
+    };
+
+    if (isAutoScrolling) {
+      animationFrameId = requestAnimationFrame(scrollStep);
+      // Hide overlay when starting auto scroll
+      setIsOverlayVisible(false);
+    }
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, [isAutoScrolling, autoScrollSpeed, preferences.mode]);
+
+  // Scroll Progress Listener
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = totalHeight > 0 ? (window.scrollY / totalHeight) * 100 : 0;
+      setScrollProgress(progress);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Keyboard Shortcuts & Fullscreen Listener
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      switch (e.key.toLowerCase()) {
+        case "arrowright":
+        case "d":
+          if (preferences.mode === "single") {
+             setCurrentPageIndex((prev) => Math.min(pagesData?.pages.length ? pagesData.pages.length - 1 : 0, prev + 1));
+          }
+          break;
+        case "arrowleft":
+        case "a":
+          if (preferences.mode === "single") {
+             setCurrentPageIndex((prev) => Math.max(0, prev - 1));
+          }
+          break;
+        case "f":
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch((err) => console.log(err));
+          } else {
+            document.exitFullscreen();
+          }
+          break;
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [pagesData, preferences.mode]);
 
   useEffect(() => {
     const fetchReaderData = async () => {
@@ -221,24 +310,41 @@ export default function ReaderPage({
   }
 
   return (
-    <div className={`flex-1 flex flex-col ${getThemeClass()} transition-colors duration-300 min-h-screen relative`}>
+    <div 
+      className={`flex-1 flex flex-col ${getThemeClass()} transition-colors duration-300 min-h-screen relative`}
+      onClick={() => setIsOverlayVisible(prev => !prev)}
+    >
+      {/* 0. Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 h-1 z-[60] bg-transparent pointer-events-none">
+        <div 
+          className="h-full bg-accent-green transition-all duration-100 ease-out" 
+          style={{ width: `${preferences.mode === "vertical" ? scrollProgress : ((currentPageIndex + 1) / (pagesData.pages.length || 1)) * 100}%` }} 
+        />
+      </div>
       {/* 1. Header Toolbar */}
-      <ReaderToolbar
-        comicTitle={comic?.title || "Manga"}
-        comicId={comicId}
-        provider={provider}
-        chapters={chapters}
-        currentChapterId={chapterId}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-      />
+      <div 
+        className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out ${isOverlayVisible ? 'translate-y-0' : '-translate-y-full'}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <ReaderToolbar
+          comicTitle={comic?.title || "Manga"}
+          comicId={comicId}
+          provider={provider}
+          chapters={chapters}
+          currentChapterId={chapterId}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+        />
+      </div>
 
       {/* 2. Reader Settings popover */}
-      <ReaderSettings
-        preferences={preferences}
-        onChange={handlePreferencesChange}
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
+      <div onClick={(e) => e.stopPropagation()}>
+        <ReaderSettings
+          preferences={preferences}
+          onChange={handlePreferencesChange}
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+        />
+      </div>
 
       {/* 3. Panel Container */}
       <div className={`flex-1 flex flex-col items-center justify-start ${preferences.mode === "vertical" ? "py-0 px-0" : "py-6 px-1"}`}>
@@ -247,13 +353,17 @@ export default function ReaderPage({
         {preferences.mode === "vertical" ? (
           <div className={`w-full flex flex-col gap-0 mx-auto ${getWidthClass()}`}>
             {pagesData.pages.map((pageUrl, idx) => (
-              <div key={idx} className="w-full relative bg-transparent flex items-center justify-center">
+              <div key={idx} className="w-full relative bg-transparent flex items-center justify-center min-h-[500px]">
                 <img
                   src={pageUrl}
                   alt={`Page ${idx + 1}`}
                   loading={idx < 2 ? "eager" : "lazy"}
                   referrerPolicy="no-referrer"
-                  className="w-full h-auto block border-none p-0 m-0"
+                  className="w-full h-auto block border-none p-0 m-0 blur-sm bg-surface/50 transition-[filter] duration-500 ease-in-out"
+                  onLoad={(e) => {
+                    e.currentTarget.classList.remove('blur-sm', 'bg-surface/50');
+                    e.currentTarget.parentElement?.classList.remove('min-h-[500px]');
+                  }}
                   onError={(e) => {
                     const imgTarget = e.currentTarget;
                     imgTarget.onerror = null;
@@ -273,7 +383,8 @@ export default function ReaderPage({
                 src={pagesData.pages[currentPageIndex]}
                 alt={`Page ${currentPageIndex + 1}`}
                 referrerPolicy="no-referrer"
-                className="max-h-full max-w-full object-contain"
+                className="max-h-full max-w-full object-contain blur-sm transition-[filter] duration-300"
+                onLoad={(e) => e.currentTarget.classList.remove('blur-sm')}
               />
               
               {/* Invisible click targets */}
@@ -314,8 +425,96 @@ export default function ReaderPage({
 
       </div>
 
-      {/* 4. Bottom Navigation Arrows */}
-      <div className="border-t border-border-dark/25 w-full bg-surface/30">
+      {/* Smart Next Chapter at the bottom */}
+      {preferences.mode === "vertical" && pagesData.nextChapterId && (
+        <div className="w-full py-16 flex items-center justify-center border-t border-border-dark/10">
+          <Link
+            href={`/read/${provider}/${pagesData.nextChapterId}`}
+            className="flex items-center gap-3 px-8 h-14 rounded-full bg-accent-green hover:bg-green-600 text-white font-bold transition-all hover:scale-105 active:scale-95"
+          >
+            Continue to Next Chapter
+            <ArrowRight className="h-5 w-5" />
+          </Link>
+        </div>
+      )}
+
+      {/* 4. Bottom Floating Navigation (Auto scroll + Prev/Next) */}
+      <div 
+        className={`fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out ${isOverlayVisible ? 'translate-y-0' : 'translate-y-full'}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-full bg-surface/90 backdrop-blur-md border-t border-border-dark/35 px-4 py-3 flex items-center justify-center gap-4">
+          
+          {/* Prev Chapter */}
+          {pagesData.previousChapterId ? (
+            <Link
+              href={`/read/${provider}/${pagesData.previousChapterId}`}
+              className="p-3 hover:bg-surface-hover rounded-full text-foreground transition-colors"
+              title="Previous Chapter"
+            >
+              <SkipBack className="h-5 w-5" />
+            </Link>
+          ) : (
+            <div className="p-3 text-muted-text/30 cursor-not-allowed">
+              <SkipBack className="h-5 w-5" />
+            </div>
+          )}
+
+          {/* Speed Control (Decrease) */}
+          <button 
+            onClick={() => setAutoScrollSpeed(prev => Math.max(0.5, prev - 0.5))}
+            className="p-2 hover:text-accent-green hover:bg-surface-hover rounded-full transition-colors text-muted-text"
+            title="Slower"
+          >
+            <Minus className="h-4 w-4" />
+          </button>
+
+          {/* Play/Pause Auto Scroll */}
+          <button
+            onClick={() => setIsAutoScrolling(!isAutoScrolling)}
+            className={`p-4 rounded-full transition-all ${isAutoScrolling ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20' : 'bg-accent-green text-zinc-950 hover:bg-green-500'} flex items-center gap-2`}
+            title={isAutoScrolling ? "Stop Auto Scroll" : "Start Auto Scroll"}
+          >
+            {isAutoScrolling ? (
+              <Pause className="h-5 w-5 fill-current" />
+            ) : (
+              <Play className="h-5 w-5 fill-current ml-0.5" />
+            )}
+            <span className="text-xs font-bold w-6 text-center">{autoScrollSpeed}x</span>
+          </button>
+
+          {/* Speed Control (Increase) */}
+          <button 
+            onClick={() => setAutoScrollSpeed(prev => Math.min(5, prev + 0.5))}
+            className="p-2 hover:text-accent-green hover:bg-surface-hover rounded-full transition-colors text-muted-text"
+            title="Faster"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+
+          {/* Next Chapter */}
+          {pagesData.nextChapterId ? (
+            <Link
+              href={`/read/${provider}/${pagesData.nextChapterId}`}
+              className="p-3 hover:bg-surface-hover rounded-full text-foreground transition-colors"
+              title="Next Chapter"
+            >
+              <SkipForward className="h-5 w-5" />
+            </Link>
+          ) : (
+            <div className="p-3 text-muted-text/30 cursor-not-allowed">
+              <SkipForward className="h-5 w-5" />
+            </div>
+          )}
+          
+        </div>
+      </div>
+
+      {/* 5. Bottom List Link (Static at the end of the content) */}
+      <div 
+        className="border-t border-border-dark/25 w-full bg-surface/30 mt-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <ChapterNavigation
           provider={provider}
           comicId={comicId}
@@ -323,6 +522,18 @@ export default function ReaderPage({
           previousChapterId={pagesData.previousChapterId}
         />
       </div>
+
+      {/* Back to Top Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        className={`fixed bottom-20 right-6 md:right-10 z-40 p-3 rounded-full bg-surface/80 backdrop-blur-md border border-border-dark text-foreground transition-all duration-300 hover:bg-surface-hover ${scrollProgress > 10 && !isOverlayVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+        title="Back to Top"
+      >
+        <ChevronUp className="h-6 w-6" />
+      </button>
 
     </div>
   );

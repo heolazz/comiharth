@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Chapter } from "@/lib/providers/types";
-import { ArrowLeft, Settings, Home } from "lucide-react";
+import { ArrowLeft, Settings, Home, Maximize, Minimize } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface ReaderToolbarProps {
   comicTitle: string;
@@ -23,6 +24,23 @@ export default function ReaderToolbar({
   onOpenSettings,
 }: ReaderToolbarProps) {
   const router = useRouter();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => console.log(err));
+    } else {
+      document.exitFullscreen();
+    }
+  };
   
   // Sort chapters ascending so they appear sequentially (1, 2, 3...) in dropdown
   const sortedChapters = [...chapters].sort((a, b) => {
@@ -41,7 +59,7 @@ export default function ReaderToolbar({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-surface/90 backdrop-blur-md border-b border-border-dark/35 px-4 py-3 text-foreground flex items-center justify-between shadow-sm transition-colors duration-300">
+    <header className="w-full bg-surface/90 backdrop-blur-md border-b border-border-dark/35 px-4 py-3 text-foreground flex items-center justify-between shadow-sm transition-colors duration-300">
       {/* Back and Title */}
       <div className="flex items-center gap-3 max-w-[50%]">
         <Link
@@ -66,25 +84,36 @@ export default function ReaderToolbar({
 
       {/* Center Actions: Chapter Dropdown Select */}
       <div className="flex items-center gap-2">
-        <div className="relative">
+        <div className="relative group">
           <select
             value={currentChapterId}
             onChange={handleChapterChange}
-            className="appearance-none bg-surface border border-border-dark rounded-xl pl-3 pr-8 py-1.5 text-xs font-bold text-foreground focus:outline-none focus:border-accent-green/50 transition-colors cursor-pointer"
+            className="appearance-none bg-surface-hover border border-border-dark/60 rounded-xl pl-4 pr-10 py-2 text-xs font-extrabold text-foreground focus:outline-none focus:border-accent-green/70 focus:ring-1 focus:ring-accent-green/70 transition-all shadow-sm hover:border-border-dark cursor-pointer"
           >
             {sortedChapters.map((ch) => (
-              <option key={ch.id} value={ch.id}>
+              <option key={ch.id} value={ch.id} className="bg-background text-foreground font-semibold">
                 Chapter {ch.chapterNumber}
               </option>
             ))}
           </select>
-          {/* Dropdown arrow conforming to light/dark modes */}
-          <div className="absolute right-2.5 top-3 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground/80" />
+          {/* Custom Dropdown Arrow */}
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-text group-hover:text-foreground transition-colors">
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
         </div>
       </div>
 
       {/* Right Actions: Settings & Home */}
       <div className="flex items-center gap-1.5">
+        <button
+          onClick={toggleFullscreen}
+          className="p-2 hover:bg-surface-hover rounded-xl transition-colors cursor-pointer text-muted-text hover:text-foreground hidden md:block"
+          title="Toggle Fullscreen"
+        >
+          {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
+        </button>
         <button
           onClick={onOpenSettings}
           className="p-2 hover:bg-surface-hover rounded-xl transition-colors cursor-pointer text-muted-text hover:text-foreground"
