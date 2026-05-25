@@ -159,7 +159,7 @@ export default function HomePage() {
                   <img
                     src={trendingComics[currentSlide].cover_image_url || trendingComics[currentSlide].cover_portrait_url}
                     alt={trendingComics[currentSlide].title}
-                    className="w-full h-full object-cover blur-[2px] md:blur-none"
+                    className="w-full h-full object-cover object-[center_15%] blur-[2px] md:blur-none"
                   />
                   <div className="absolute inset-0 bg-gradient-to-l from-transparent to-background/90" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
@@ -208,7 +208,7 @@ export default function HomePage() {
                 <img
                   src="https://assets.shngm.id/thumbnail/image/09919a8b39cb.jpeg"
                   alt="Solo Leveling Splash Background"
-                  className="w-full h-full object-cover blur-[4px] md:blur-none transition-all duration-700"
+                  className="w-full h-full object-cover object-[center_15%] blur-[4px] md:blur-none transition-all duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-l from-transparent to-background/90" />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
