@@ -191,8 +191,7 @@ export default function HomePage() {
                     transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
                     className="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-4 items-center md:items-start text-center md:text-left"
                   >
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-accent-green/30 bg-accent-green/20 text-[10px] font-extrabold tracking-wider text-accent-green uppercase backdrop-blur-md">
-                      <TrendingUp className="h-3 w-3" />
+                    <div className="inline-flex items-center px-3 py-1 rounded-full border border-accent-green/30 bg-accent-green/20 text-[10px] font-extrabold tracking-wider text-accent-green uppercase backdrop-blur-md">
                       Top Trending
                     </div>
                     
@@ -263,8 +262,7 @@ export default function HomePage() {
 
                 {/* Right: Details */}
                 <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-4 items-center md:items-start text-center md:text-left">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-accent-green/30 bg-accent-green/20 text-[10px] font-extrabold tracking-wider text-accent-green uppercase backdrop-blur-md">
-                    <Flame className="h-3 w-3" />
+                  <div className="inline-flex items-center px-3 py-1 rounded-full border border-accent-green/30 bg-accent-green/20 text-[10px] font-extrabold tracking-wider text-accent-green uppercase backdrop-blur-md">
                     Spotlight Series
                   </div>
                   
