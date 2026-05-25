@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent-green/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="mx-auto max-w-7xl px-4 md:px-8 relative z-10 flex flex-col items-center gap-8">
+      <div className="mx-auto max-w-[1400px] px-4 md:px-8 relative z-10 flex flex-col items-center gap-8">
         {/* Playful logo and tagline */}
         <div className="flex flex-col items-center gap-3">
           <Link href="/" className="flex items-center group">
