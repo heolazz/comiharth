@@ -273,8 +273,8 @@ function SearchContent() {
                   {[
                     { value: "latest", label: "Recently Updated" },
                     { value: "relevance", label: "Relevance" },
-                    { value: "title-asc", label: "Title A-Z" },
-                    { value: "title-desc", label: "Title Z-A" },
+                    { value: "trending", label: "Trending" },
+                    { value: "popular", label: "Popular" },
                   ].map((opt) => (
                     <button
                       key={opt.value}
