@@ -165,7 +165,7 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-background/90 hidden md:block" />
                 </div>
 
-                <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-14 h-full pt-20 pb-20 md:pt-24 md:pb-16">
+                <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-14 h-full pt-28 pb-20 md:pt-32 md:pb-16">
                   
                   {/* Left: Poster Image */}
                   <motion.div 
@@ -195,7 +195,7 @@ export default function HomePage() {
                       Top Trending
                     </div>
                     
-                    <h1 className="font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg">
+                    <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg line-clamp-2 md:line-clamp-3">
                       {trendingComics[currentSlide].title}
                     </h1>
 
@@ -208,7 +208,7 @@ export default function HomePage() {
                       <span className="bg-surface/50 backdrop-blur-md px-2.5 py-1 rounded-lg border border-border-dark/50">Manga</span>
                     </div>
                     
-                    <p className="text-sm md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-3 md:line-clamp-4 mt-1 md:mt-2">
+                    <p className="text-sm md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-2 md:line-clamp-3 mt-1 md:mt-2">
                       {trendingComics[currentSlide].description || "No description available."}
                     </p>
 
@@ -246,7 +246,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-background/90 hidden md:block" />
               </div>
 
-              <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-14 h-full pt-20 pb-20 md:pt-24 md:pb-16">
+              <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-14 h-full pt-28 pb-20 md:pt-32 md:pb-16">
                 
                 {/* Left: Poster Image */}
                 <div className="w-1/2 sm:w-2/5 md:w-1/3 lg:w-1/4 flex justify-center md:justify-end shrink-0">
@@ -266,7 +266,7 @@ export default function HomePage() {
                     Spotlight Series
                   </div>
                   
-                  <h1 className="font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg">
+                  <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg line-clamp-2 md:line-clamp-3">
                     Solo Leveling: <br />
                     <span className="bg-gradient-to-r from-accent-green via-emerald-400 to-teal-400 bg-clip-text text-transparent">
                       Na Honjaman Level Up
@@ -282,7 +282,7 @@ export default function HomePage() {
                     <span className="bg-surface/50 backdrop-blur-md px-2.5 py-1 rounded-lg border border-border-dark/50">Manhwa</span>
                   </div>
                   
-                  <p className="text-sm md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-3 md:line-clamp-4 mt-1 md:mt-2">
+                  <p className="text-sm md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-2 md:line-clamp-3 mt-1 md:mt-2">
                     10 tahun yang lalu, setelah Gerbang yang menghubungkan dunia nyata dengan dunia monster terbuka, beberapa orang biasa menerima kekuatan untuk berburu monster di dalam Dungeon...
                   </p>
 
