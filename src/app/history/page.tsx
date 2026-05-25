@@ -84,7 +84,7 @@ export default function HistoryPage() {
         {historyList.length > 0 && (
           <button
             onClick={clearHistory}
-            className="flex h-10 items-center justify-center gap-2 px-4 rounded-xl border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-xs font-bold text-red-500 hover:text-red-400 transition-all cursor-pointer shadow-sm"
+            className="flex h-10 items-center justify-center gap-2 px-4 rounded-xl border border-border-dark bg-surface hover:bg-surface-hover text-xs font-bold text-muted-text hover:text-accent-green hover:border-accent-green/30 transition-all cursor-pointer shadow-sm"
           >
             <Trash2 className="h-4 w-4" />
             <span>Clear History</span>
