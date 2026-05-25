@@ -4,16 +4,18 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense, useMemo } from "react";
 import { ComicSearchResult } from "@/lib/providers/types";
 import ComicGrid from "@/components/comic/ComicGrid";
-import { Search, Compass, Loader2, SlidersHorizontal, RotateCcw, Check, ArrowUpDown } from "lucide-react";
+import { Search, Compass, Loader2, SlidersHorizontal, RotateCcw, Check, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get("q") || "";
   const providerParam = searchParams.get("provider") || "shinigami";
+  const pageParam = parseInt(searchParams.get("page") || "1", 10);
 
   const [inputVal, setInputVal] = useState(query);
   const [activeProvider, setActiveProvider] = useState(providerParam);
+  const [currentPage, setCurrentPage] = useState(pageParam);
   const [results, setResults] = useState<ComicSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,10 +26,11 @@ function SearchContent() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("relevance");
 
-  // Sync states when query parameters change
+  // Sync states when URL parameters change
   useEffect(() => {
     setActiveProvider(providerParam);
-  }, [providerParam]);
+    setCurrentPage(pageParam);
+  }, [providerParam, pageParam]);
 
   useEffect(() => {
     setInputVal(query);
@@ -37,7 +40,9 @@ function SearchContent() {
       setError("");
       try {
         const searchVal = query.trim() || "a";
-        const res = await fetch(`/api/search?q=${encodeURIComponent(searchVal)}&provider=${activeProvider}`);
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(searchVal)}&provider=${activeProvider}&page=${currentPage}`
+        );
         
         if (res.ok) {
           const json = await res.json();
@@ -57,16 +62,20 @@ function SearchContent() {
     };
 
     performSearch();
-  }, [query, activeProvider]);
+  }, [query, activeProvider, currentPage]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${activeProvider}`);
+    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${activeProvider}&page=1`);
   };
 
   const handleProviderChange = (prov: string) => {
     setActiveProvider(prov);
-    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${prov}`);
+    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${prov}&page=1`);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=${newPage}`);
   };
 
   // ⚡ Client-side Instant Filter & Sort calculation
@@ -107,6 +116,9 @@ function SearchContent() {
     setSelectedStatus("all");
     setSortBy("relevance");
   };
+
+  // Dynamic Pagination Boundary: Shinigami serves 24 items per page
+  const hasNextPage = results.length === 24;
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 md:px-8 py-10 flex flex-col gap-8 transition-colors duration-300">
@@ -330,7 +342,42 @@ function SearchContent() {
           </p>
         </div>
       ) : (
-        <ComicGrid comics={processedResults} />
+        <>
+          <ComicGrid comics={processedResults} />
+
+          {/* Premium Pagination Component Shelf */}
+          <div className="mt-8 flex items-center justify-center gap-4 border-t border-border-dark/20 pt-8">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage <= 1 || isLoading}
+              className={`flex items-center gap-1.5 h-10 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                currentPage <= 1
+                  ? "opacity-40 bg-zinc-100/5 text-zinc-500 border-zinc-200/10 cursor-not-allowed"
+                  : "bg-surface border-border-dark/60 text-foreground hover:text-accent-green hover:border-accent-green/30"
+              }`}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </button>
+
+            <span className="flex h-10 px-4 items-center justify-center rounded-xl bg-surface border border-border-dark/40 text-xs font-bold text-foreground">
+              Page {currentPage}
+            </span>
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={!hasNextPage || isLoading}
+              className={`flex items-center gap-1.5 h-10 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                !hasNextPage
+                  ? "opacity-40 bg-zinc-100/5 text-zinc-500 border-zinc-200/10 cursor-not-allowed"
+                  : "bg-surface border-border-dark/60 text-foreground hover:text-accent-green hover:border-accent-green/30"
+              }`}
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
