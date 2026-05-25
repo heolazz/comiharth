@@ -64,21 +64,17 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8 py-10 md:py-16 flex flex-col gap-12 transition-colors duration-500 overflow-hidden relative">
-
-      {/* Joyful Background Blobs */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-accent-green/5 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute bottom-1/2 left-0 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl pointer-events-none -z-10" />
+    <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8 py-10 md:py-16 flex flex-col gap-8 md:gap-12 transition-colors duration-500 overflow-hidden relative">
 
       {/* Playful Title Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 relative z-10">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2 md:gap-3">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-2"
           >
-            <h1 className="text-4xl md:text-6xl font-display font-black text-foreground tracking-tight flex items-center gap-3">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-black text-foreground tracking-tight flex items-center gap-3">
               Your Shelf
             </h1>
           </motion.div>
@@ -86,7 +82,7 @@ export default function HistoryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-base text-muted-text font-bold max-w-xl"
+            className="text-sm md:text-base text-muted-text font-bold max-w-xl"
           >
             Welcome back! Ready to dive back into your favorite worlds?
           </motion.p>
@@ -94,12 +90,12 @@ export default function HistoryPage() {
 
         {historyList.length > 0 && (
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={clearHistory}
-            className="flex h-12 items-center justify-center gap-2 px-6 rounded-[20px] border border-transparent bg-white hover:bg-zinc-200 text-sm font-bold text-black transition-all cursor-pointer shadow-sm group"
+            className="flex h-9 w-fit items-center justify-center gap-2 px-4 rounded-xl border border-border-dark/50 bg-surface hover:bg-surface-hover text-xs font-bold text-muted-text hover:text-accent-green hover:border-accent-green/30 transition-all cursor-pointer group"
           >
-            <Trash2 className="h-4 w-4 group-hover:animate-bounce text-red-500" />
+            <Trash2 className="h-3.5 w-3.5 group-hover:animate-bounce" />
             <span>Clear History</span>
           </motion.button>
         )}
