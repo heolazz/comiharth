@@ -18,6 +18,9 @@ export default function Navbar() {
     setMounted(true);
   }, []);
 
+  // Hide global navbar on reader pages
+  if (pathname?.startsWith("/read/")) return null;
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -33,17 +36,12 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full glass border-b border-border-dark/50 backdrop-blur-md transition-colors duration-300">
-      <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 md:px-8">
+    <header className="sticky top-0 z-50 w-full bg-background transition-colors duration-300">
+      <div className="mx-auto flex max-w-7xl h-20 items-center justify-between px-4 md:px-8">
         
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-green/10 border border-accent-green/20 transition-all group-hover:scale-105 group-hover:border-accent-green/40">
-            <Flame className="h-5 w-5 text-accent-green animate-pulse" />
-          </div>
-          <span className="font-display text-xl font-extrabold tracking-tight text-foreground transition-colors group-hover:text-accent-green">
-            Comi<span className="bg-gradient-to-r from-accent-green to-emerald-400 bg-clip-text text-transparent">Harth</span>
-          </span>
+        <Link href="/" className="flex items-center group">
+          <img src="/logo.png" alt="ComiHarth" className="h-16 w-auto object-contain transition-transform duration-300 group-hover:scale-105 dark:invert" />
         </Link>
 
         {/* Search Bar - Desktop */}
@@ -87,7 +85,7 @@ export default function Navbar() {
           {mounted && (
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2 h-10 w-10 rounded-full border border-border-dark/60 bg-surface hover:bg-surface-hover hover:border-accent-green/30 text-muted-text hover:text-accent-green flex items-center justify-center transition-all cursor-pointer shadow-sm"
+              className="p-2 h-10 w-10 rounded-full border border-border-dark/60 bg-surface hover:bg-surface-hover hover:border-accent-green/30 text-muted-text hover:text-accent-green flex items-center justify-center transition-all cursor-pointer"
               aria-label="Toggle Theme"
             >
               {theme === "dark" ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
