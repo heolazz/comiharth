@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+export const revalidate = 3600; // Cache on Vercel CDN for 1 hour
+
+
 export async function GET(request: Request) {
   try {
     // Fetch all feeds in parallel

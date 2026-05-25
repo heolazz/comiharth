@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 
+export const revalidate = 3600; // Cache on Vercel CDN for 1 hour
+
+
 export async function GET(request: Request) {
   try {
     const res = await fetch("https://api.shngm.io/v1/manga/top?filter=daily&page=1&page_size=5");
