@@ -69,10 +69,6 @@ export default function HistoryPage() {
       {/* Title Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border-dark/20 pb-6">
         <div className="flex flex-col gap-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-accent-green/20 bg-accent-green/10 text-[10px] font-extrabold tracking-wider text-accent-green uppercase w-fit">
-            <Clock className="h-3 w-3" />
-            Your Activity
-          </div>
           <h1 className="text-3xl md:text-5xl font-display font-extrabold text-foreground tracking-tight drop-shadow-sm">
             Reading History
           </h1>
