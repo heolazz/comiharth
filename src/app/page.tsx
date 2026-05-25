@@ -233,78 +233,42 @@ export default function HomePage() {
               </motion.div>
             </AnimatePresence>
           ) : (
-            <>
-              {/* Fallback Static Version */}
+            <div className="w-full h-full relative animate-pulse bg-surface/50">
               <div className="absolute inset-0 z-0">
-                <img
-                  src="https://assets.shngm.id/thumbnail/image/09919a8b39cb.jpeg"
-                  alt="Solo Leveling Splash Background"
-                  className="w-full h-full object-cover object-[center_15%] opacity-20 dark:opacity-30 blur-[30px] scale-110 transition-all duration-700"
-                />
-                <div className="absolute inset-0 bg-background/50 dark:bg-background/80" />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-background/90 hidden md:block" />
               </div>
 
               <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-row items-center justify-center gap-4 md:gap-14 h-full pt-24 pb-12 md:pt-32 md:pb-16">
                 
-                {/* Left: Poster Image */}
+                {/* Left: Poster Image Placeholder */}
                 <div className="w-[35%] sm:w-[30%] md:w-1/3 lg:w-1/4 flex justify-end shrink-0">
-                  <div className="relative w-full max-w-[140px] md:max-w-[280px] aspect-[2/3] rounded-xl md:rounded-2xl overflow-hidden shadow-2xl shadow-black/15 dark:shadow-black/50 border border-border-dark/20 group">
-                    <img 
-                      src="https://assets.shngm.id/thumbnail/image/09919a8b39cb.jpeg" 
-                      alt="Solo Leveling"
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
+                  <div className="relative w-full max-w-[140px] md:max-w-[280px] aspect-[2/3] rounded-xl md:rounded-2xl overflow-hidden bg-border-dark/20 dark:bg-border-dark/40 border border-border-dark/20"></div>
                 </div>
 
-                {/* Right: Details */}
+                {/* Right: Details Placeholder */}
                 <div className="w-[65%] sm:w-[70%] md:w-2/3 lg:w-3/4 flex flex-col gap-2 md:gap-4 items-start text-left md:pr-12">
-                  <div className="inline-flex items-center px-2 py-0.5 md:px-3 md:py-1 rounded-full border border-accent-green/30 bg-accent-green/20 text-[8px] md:text-[10px] font-extrabold tracking-wider text-accent-green uppercase backdrop-blur-md">
-                    Spotlight Series
+                  <div className="w-20 md:w-24 h-4 md:h-6 rounded-full bg-border-dark/20 dark:bg-border-dark/40"></div>
+                  
+                  <div className="w-3/4 h-6 md:h-12 bg-border-dark/30 dark:bg-border-dark/50 rounded-md mt-1 md:mt-2"></div>
+                  <div className="w-1/2 h-6 md:h-12 bg-border-dark/30 dark:bg-border-dark/50 rounded-md"></div>
+
+                  <div className="flex flex-wrap items-center justify-start gap-1.5 md:gap-4 mt-2">
+                    <div className="w-12 md:w-16 h-4 md:h-6 bg-border-dark/20 dark:bg-border-dark/40 rounded-md"></div>
+                    <div className="w-16 md:w-20 h-4 md:h-6 bg-border-dark/20 dark:bg-border-dark/40 rounded-md"></div>
                   </div>
                   
-                  <h1 className="font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg line-clamp-3">
-                    Solo Leveling: <br />
-                    <span className="bg-gradient-to-r from-accent-green via-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                      Na Honjaman Level Up
-                    </span>
-                  </h1>
+                  <div className="w-full h-3 md:h-4 bg-border-dark/10 dark:bg-border-dark/30 rounded-md mt-2 md:mt-4"></div>
+                  <div className="w-full h-3 md:h-4 bg-border-dark/10 dark:bg-border-dark/30 rounded-md"></div>
+                  <div className="w-2/3 h-3 md:h-4 bg-border-dark/10 dark:bg-border-dark/30 rounded-md"></div>
 
-                  {/* Metadata Badges */}
-                  <div className="flex flex-wrap items-center justify-start gap-1.5 md:gap-4 text-[9px] md:text-xs font-bold text-foreground/80 uppercase tracking-wider mt-0.5">
-                    <span className="flex items-center gap-1 text-yellow-500 dark:text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-md md:rounded-lg border border-yellow-400/20">
-                      <Star className="h-2.5 w-2.5 md:h-3.5 md:w-3.5 fill-current" /> 9.9
-                    </span>
-                    <span className="bg-surface/50 backdrop-blur-md px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-md md:rounded-lg border border-border-dark/50">Completed</span>
-                    <span className="bg-surface/50 backdrop-blur-md px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-md md:rounded-lg border border-border-dark/50 hidden sm:inline-flex">Manhwa</span>
-                  </div>
-                  
-                  <p className="text-[11px] sm:text-xs md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-3 mt-1 md:mt-2">
-                    10 tahun yang lalu, setelah Gerbang yang menghubungkan dunia nyata dengan dunia monster terbuka, beberapa orang biasa menerima kekuatan untuk berburu monster di dalam Dungeon...
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 md:gap-3 items-center mt-1 md:mt-4 justify-start">
-                    <Link
-                      href="/read/shinigami/5c612573-fe38-42df-8618-dc3de1c9d04a~latest-placeholder"
-                      className="flex items-center gap-1.5 md:gap-2 h-8 px-4 md:h-12 md:px-8 rounded-lg md:rounded-xl bg-accent-green hover:bg-green-600 text-xs md:text-sm font-bold text-white transition-all shadow-lg shadow-green-500/20 cursor-pointer"
-                    >
-                      <Play className="h-3 w-3 md:h-4 md:w-4 fill-current" />
-                      <span>Read</span>
-                    </Link>
-                    <Link
-                      href="/comic/shinigami/5c612573-fe38-42df-8618-dc3de1c9d04a"
-                      className="flex items-center gap-1.5 md:gap-2 h-8 px-3 md:h-12 md:px-6 rounded-lg md:rounded-xl bg-surface/30 backdrop-blur-md hover:bg-surface/60 border border-border-dark text-xs md:text-sm font-bold text-foreground transition-colors cursor-pointer"
-                    >
-                      <Info className="h-3 w-3 md:h-4 md:w-4 text-accent-green" />
-                      <span className="hidden sm:inline">Info</span>
-                    </Link>
+                  <div className="flex flex-wrap gap-2 md:gap-3 items-center mt-2 md:mt-4 justify-start">
+                    <div className="w-24 md:w-36 h-8 md:h-12 rounded-lg md:rounded-xl bg-border-dark/30 dark:bg-border-dark/50"></div>
+                    <div className="w-20 md:w-28 h-8 md:h-12 rounded-lg md:rounded-xl bg-border-dark/20 dark:bg-border-dark/40"></div>
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           {/* Slider Indicators */}
