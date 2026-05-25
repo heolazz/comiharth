@@ -97,9 +97,9 @@ export default function HistoryPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={clearHistory}
-            className="flex h-12 items-center justify-center gap-2 px-6 rounded-[20px] border-2 border-border-dark bg-surface hover:bg-surface-hover text-sm font-bold text-muted-text hover:text-red-400 hover:border-red-400/30 transition-all cursor-pointer shadow-sm group"
+            className="flex h-12 items-center justify-center gap-2 px-6 rounded-[20px] border border-transparent bg-white hover:bg-zinc-200 text-sm font-bold text-black transition-all cursor-pointer shadow-sm group"
           >
-            <Trash2 className="h-4 w-4 group-hover:animate-bounce" />
+            <Trash2 className="h-4 w-4 group-hover:animate-bounce text-red-500" />
             <span>Clear History</span>
           </motion.button>
         )}
