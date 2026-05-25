@@ -160,15 +160,7 @@ export default function ComicDetailPage({
   const firstChapter = chapters.length > 0 ? [...chapters].sort((a, b) => parseFloat(a.chapterNumber || "0") - parseFloat(b.chapterNumber || "0"))[0] : null;
 
   return (
-    <div className="w-full relative min-h-screen transition-colors duration-300">
-      {/* Blurred background cover banner */}
-      <div className="absolute top-0 left-0 right-0 h-[400px] overflow-hidden pointer-events-none z-0">
-        <div
-          className="w-full h-full bg-cover bg-center blur-[80px] opacity-15 scale-105"
-          style={{ backgroundImage: `url(${comic.banner || comic.cover})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
-      </div>
+    <div className="w-full relative min-h-screen bg-background transition-colors duration-300">
 
       <div className="mx-auto max-w-6xl px-4 md:px-8 pt-10 pb-20 relative z-10 flex flex-col gap-12">
         {/* Splitted header info */}

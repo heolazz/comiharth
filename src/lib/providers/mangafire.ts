@@ -94,7 +94,7 @@ export class MangaFireProvider implements MangaProvider {
     this.baseUrl = process.env.MANGAFIRE_API_BASE_URL || "";
   }
 
-  async search(query: string, page = 1, format = ""): Promise<ComicSearchResult[]> {
+  async search(query: string, page = 1, format = "", genre = "", status = "", sort = ""): Promise<{ results: ComicSearchResult[], totalCount?: number }> {
     if (this.baseUrl) {
       try {
         const response = await fetch(`${this.baseUrl}/api/search/${encodeURIComponent(query)}?page=${page}`, {
@@ -113,7 +113,7 @@ export class MangaFireProvider implements MangaProvider {
           }
 
           if (results.length > 0) {
-            return results.map((item: any) => {
+            const mappedResults = results.map((item: any) => {
               const coverUrl = item.poster || item.cover || "";
               // Handle proxies or direct URLs
               const finalCover = coverUrl.startsWith("/") ? `${this.baseUrl}${coverUrl}` : coverUrl;
@@ -130,6 +130,7 @@ export class MangaFireProvider implements MangaProvider {
                 url: item.url
               };
             });
+            return { results: mappedResults };
           }
         }
       } catch (error) {
@@ -146,7 +147,7 @@ export class MangaFireProvider implements MangaProvider {
         comic.altTitles?.some(t => t.toLowerCase().includes(lowerQuery))
     );
 
-    return filtered.map(c => ({
+    const mockResults = filtered.map(c => ({
       id: c.id,
       provider: "mangafire",
       title: c.title,
@@ -157,6 +158,8 @@ export class MangaFireProvider implements MangaProvider {
       latestChapter: `Chapter ${c.chaptersCount}`,
       url: c.url
     }));
+
+    return { results: mockResults };
   }
 
   async getDetails(id: string): Promise<ComicDetail> {

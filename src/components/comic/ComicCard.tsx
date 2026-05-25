@@ -7,30 +7,31 @@ import { BookOpen } from "lucide-react";
 
 interface ComicCardProps {
   comic: ComicSearchResult;
+  className?: string;
 }
 
-export default function ComicCard({ comic }: ComicCardProps) {
+export default function ComicCard({ comic, className = "" }: ComicCardProps) {
   // Determine badge styling based on type
   const getTypeBadge = (type?: string) => {
     switch (type) {
       case "manhwa":
-        return "bg-purple-600/10 text-purple-600 border-purple-500/20 dark:text-purple-400";
+        return "bg-surface text-foreground border-border-dark/60 shadow-sm";
       case "manhua":
-        return "bg-amber-600/10 text-amber-600 border-amber-500/20 dark:text-amber-400";
+        return "bg-foreground text-surface border-transparent shadow-sm";
       case "manga":
-        return "bg-accent-green/10 text-accent-green border-accent-green/20";
+        return "bg-accent-green text-white border-accent-green shadow-sm";
       default:
-        return "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700/50";
+        return "bg-surface/90 text-muted-text border-border-dark/50";
     }
   };
 
   return (
     <motion.div
-      whileHover={{ y: -6, scale: 1.02 }}
+      whileHover={{ y: -4 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="group relative flex flex-col rounded-2xl bg-surface border border-border-dark/60 overflow-hidden hover:border-accent-green/40 hover:shadow-[0_8px_30px_rgba(0,200,83,0.1)] transition-all duration-300"
+      className={`group relative flex flex-col bg-transparent transition-all duration-300 ${className}`}
     >
-      <Link href={`/comic/${comic.provider}/${comic.id}`} className="relative aspect-[3/4] w-full overflow-hidden block">
+      <Link href={`/comic/${comic.provider}/${comic.id}`} className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl border border-border-dark/30 shadow-sm group-hover:border-accent-green/40 group-hover:shadow-[0_8px_25px_rgba(0,200,83,0.15)] transition-all duration-300 block">
         {/* Cover Image */}
         {comic.cover ? (
           <img
@@ -46,31 +47,32 @@ export default function ComicCard({ comic }: ComicCardProps) {
         )}
 
         {/* Dynamic Badges */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
+        <div className="absolute top-2 left-2 flex flex-wrap gap-1.5 z-10">
           <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md border backdrop-blur-md ${getTypeBadge(comic.type)}`}>
             {comic.type || "manga"}
           </span>
         </div>
 
         {/* Hover overlay shadow gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </Link>
 
       {/* Info Block */}
-      <div className="p-4 flex flex-col flex-1 bg-surface border-t border-border-dark/30">
-        <h3 className="font-display font-bold text-sm text-foreground line-clamp-1 group-hover:text-accent-green transition-colors duration-200" title={comic.title}>
+      <div className="pt-2.5 pb-1 flex flex-col flex-1 bg-transparent">
+        <h3 className="font-display font-bold text-[15px] text-center text-foreground line-clamp-2 leading-[1.4] h-[42px] group-hover:text-accent-green transition-colors duration-200" title={comic.title}>
           <Link href={`/comic/${comic.provider}/${comic.id}`}>
             {comic.title}
           </Link>
         </h3>
         
-        <div className="mt-2 flex items-center justify-between text-xs text-muted-text">
-          <span className="flex items-center gap-1 font-medium">
-            <BookOpen className="h-3.5 w-3.5 text-accent-green/80" />
+        <div className="mt-1.5 flex items-center justify-between text-xs text-muted-text">
+          <span className="font-semibold text-foreground/80">
             {comic.latestChapter || "Ch. 0"}
           </span>
-          <span className="capitalize text-[10px] text-muted-text font-bold px-1.5 py-0.5 bg-surface-hover border border-border-dark/50 rounded-md">
-            {comic.status || "unknown"}
+          <span className="flex items-center gap-1.5 text-[10px] text-muted-text font-bold">
+            {comic.status === "ongoing" && <span className="w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse" />}
+            {comic.status === "completed" && <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />}
+            <span className="capitalize">{comic.status || "unknown"}</span>
           </span>
         </div>
       </div>

@@ -4,18 +4,36 @@ export class ShinigamiProvider implements MangaProvider {
   name = "shinigami";
   private apiBase = "https://api.shngm.io/v1";
 
-  async search(query: string, page = 1, format = ""): Promise<ComicSearchResult[]> {
+  async search(query: string, page = 1, format = "", genre = "", status = "", sort = ""): Promise<{ results: ComicSearchResult[], totalCount?: number }> {
     try {
       const limit = 24;
       const url = new URL(`${this.apiBase}/manga/list`);
       url.searchParams.set("page", String(page));
       url.searchParams.set("page_size", String(limit));
-      url.searchParams.set("sort", "latest");
-      url.searchParams.set("sort_order", "desc");
+      if (sort === "title-asc") {
+        url.searchParams.set("sort", "title");
+        url.searchParams.set("sort_order", "asc");
+      } else if (sort === "title-desc") {
+        url.searchParams.set("sort", "title");
+        url.searchParams.set("sort_order", "desc");
+      } else {
+        url.searchParams.set("sort", "latest");
+        url.searchParams.set("sort_order", "desc");
+      }
       
       // Pass format query filter to Shinigami API if defined (manga, manhwa, manhua)
       if (format && format !== "all") {
         url.searchParams.set("format", format.trim().toLowerCase());
+      }
+
+      // Pass genre filter if defined
+      if (genre && genre !== "all") {
+        url.searchParams.set("genre", genre.trim().toLowerCase());
+      }
+
+      // Pass status filter if defined (Shinigami supports string or numeric IDs; strings like 'ongoing' usually map correctly)
+      if (status && status !== "all") {
+        url.searchParams.set("status", status.trim().toLowerCase());
       }
 
       // If query is valid, perform full text filtering using the API's q search query param
@@ -24,18 +42,23 @@ export class ShinigamiProvider implements MangaProvider {
       }
 
       const res = await fetch(url.toString(), { next: { revalidate: 300 } });
-      if (!res.ok) return [];
+      if (!res.ok) return { results: [] };
       
       const json = await res.json();
-      if (!json.data || !Array.isArray(json.data)) return [];
+      if (!json.data || !Array.isArray(json.data)) return { results: [] };
 
-      return json.data.map((item: any) => {
+      const totalCount = json.meta?.total_record;
+
+      const results = json.data.map((item: any) => {
         const cover = item.cover_portrait_url || item.cover_image_url || "";
         
         let type: any = "manga";
         const formatStr = item.taxonomy?.Format?.[0]?.slug || "";
         if (formatStr.includes("manhwa")) type = "manhwa";
-        if (formatStr.includes("manhua")) type = "manhua";
+        else if (formatStr.includes("manhua")) type = "manhua";
+        else if (item.country_id === 'KR') type = "manhwa";
+        else if (item.country_id === 'CN') type = "manhua";
+        else if (item.country_id === 'JP') type = "manga";
 
         return {
           id: item.manga_id,
@@ -48,9 +71,11 @@ export class ShinigamiProvider implements MangaProvider {
           latestChapter: item.latest_chapter_number ? `Ch. ${item.latest_chapter_number}` : undefined
         };
       });
+
+      return { results, totalCount };
     } catch (error) {
       console.error("Shinigami search failed:", error);
-      return [];
+      return { results: [] };
     }
   }
 

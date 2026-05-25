@@ -8,15 +8,18 @@ export async function GET(request: NextRequest) {
     const providerName = searchParams.get("provider") || "shinigami";
     const page = parseInt(searchParams.get("page") || "1", 10);
     const format = searchParams.get("format") || "";
+    const genre = searchParams.get("genre") || "";
+    const status = searchParams.get("status") || "";
+    const sort = searchParams.get("sort") || "";
 
-    if (!query) {
+    if (!query && !format && !genre && !status) {
       return NextResponse.json({ success: true, data: [] });
     }
 
     const provider = getProvider(providerName);
-    const results = await provider.search(query, page, format);
+    const { results, totalCount } = await provider.search(query, page, format, genre, status, sort);
 
-    return NextResponse.json({ success: true, data: results });
+    return NextResponse.json({ success: true, data: results, totalCount });
   } catch (error: any) {
     console.error("API Search Error:", error);
     return NextResponse.json(

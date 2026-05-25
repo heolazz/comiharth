@@ -5,7 +5,7 @@ export class MangaDexProvider implements MangaProvider {
   private apiBase = "https://api.mangadex.org";
   private cdnBase = "https://uploads.mangadex.org";
 
-  async search(query: string, page = 1, format = ""): Promise<ComicSearchResult[]> {
+  async search(query: string, page = 1, format = "", genre = "", status = "", sort = ""): Promise<{ results: ComicSearchResult[], totalCount?: number }> {
     try {
       const limit = 20;
       const offset = (page - 1) * limit;
@@ -14,12 +14,14 @@ export class MangaDexProvider implements MangaProvider {
         { next: { revalidate: 300 } }
       );
       
-      if (!response.ok) return [];
+      if (!response.ok) return { results: [] };
       const json = await response.json();
       
-      if (!json.data || !Array.isArray(json.data)) return [];
+      if (!json.data || !Array.isArray(json.data)) return { results: [] };
 
-      return json.data.map((item: any) => {
+      const totalCount = json.total;
+
+      const results = json.data.map((item: any) => {
         const coverRel = item.relationships?.find((r: any) => r.type === "cover_art");
         const fileName = coverRel?.attributes?.fileName;
         const coverUrl = fileName 
@@ -46,9 +48,11 @@ export class MangaDexProvider implements MangaProvider {
           latestChapter: undefined
         };
       });
+
+      return { results, totalCount };
     } catch (error) {
       console.error("MangaDex search failed:", error);
-      return [];
+      return { results: [] };
     }
   }
 
