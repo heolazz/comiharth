@@ -145,71 +145,58 @@ export default function HistoryPage() {
           </Link>
         </motion.div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-5">
           <AnimatePresence>
             {historyList.map((item, index) => (
               <motion.div
                 key={item.comicId}
-                initial={{ opacity: 0, scale: 0.8, y: 40 }}
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{
-                  delay: index * 0.05,
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 20
-                }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative flex flex-col rounded-[24px] border-2 border-border-dark/30 bg-surface transition-all duration-300 shadow-sm hover:shadow-2xl hover:shadow-accent-green/30 overflow-hidden cursor-pointer aspect-[5/7]"
+                transition={{ delay: index * 0.05, duration: 0.2 }}
+                whileHover={{ y: -4 }}
+                className="group relative flex flex-col bg-transparent transition-all duration-300"
               >
-                {/* Full Cover Image */}
-                <img
-                  src={item.comicCover}
-                  alt={item.comicTitle}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-2"
-                />
-                
-                {/* Gradient Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent opacity-90 transition-opacity duration-300 group-hover:via-background/60" />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <Link href={`/read/${item.provider}/${item.chapterId}`} className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-border-dark/30 shadow-sm group-hover:border-accent-green/40 group-hover:shadow-[0_8px_25px_rgba(0,200,83,0.15)] transition-all duration-300 block">
+                  {/* Cover Image */}
+                  <img
+                    src={item.comicCover}
+                    alt={item.comicTitle}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  
+                  {/* Dynamic Badges */}
+                  <div className="absolute top-2 left-2 flex flex-wrap gap-1.5 z-10">
+                    <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md border backdrop-blur-md bg-accent-green text-white border-accent-green shadow-sm">
+                      CH. {item.chapterNumber}
+                    </span>
+                  </div>
 
-                {/* Content Overlay */}
-                <div className="absolute inset-0 p-3 md:p-4 flex flex-col justify-between z-10">
-                  {/* Top: Chapter Badge & Time */}
-                  <div className="flex justify-between items-start">
-                    <div className="bg-background/90 backdrop-blur-md border border-border-dark/50 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5 shadow-lg transform -rotate-2 group-hover:rotate-0 transition-transform">
-                      <BookOpen className="h-3.5 w-3.5 text-accent-green" />
-                      <span className="text-[10px] md:text-xs font-black text-foreground truncate max-w-[60px] md:max-w-[100px]">
-                        Ch. {item.chapterNumber}
-                      </span>
-                    </div>
-                    
-                    <span className="text-[10px] text-white/90 font-bold flex items-center gap-1 bg-black/40 backdrop-blur-md px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0">
-                      <Clock className="h-3 w-3" />
+                  <div className="absolute bottom-2 right-2 flex flex-wrap gap-1.5 z-10">
+                    <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-md border backdrop-blur-md bg-black/70 text-white border-transparent shadow-sm flex items-center gap-1">
+                      <Clock className="h-2.5 w-2.5" />
                       {formatRelativeTime(item.lastReadAt)}
                     </span>
                   </div>
 
-                  {/* Bottom: Title & Play Button */}
-                  <div className="flex flex-col gap-3">
-                    <Link
-                      href={`/comic/${item.provider}/${item.comicId}`}
-                      className="text-sm md:text-lg font-black text-white hover:text-accent-green transition-colors line-clamp-2 leading-tight drop-shadow-md"
-                      title={item.comicTitle}
-                    >
-                      {item.comicTitle}
-                    </Link>
-                    
-                    <div className="overflow-hidden">
-                      <Link
-                        href={`/read/${item.provider}/${item.chapterId}`}
-                        className="flex items-center justify-center gap-2 w-full h-10 md:h-12 rounded-[16px] bg-accent-green hover:bg-green-600 text-white shadow-xl shadow-accent-green/20 transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Play className="h-4 w-4 fill-current" />
-                        <span className="font-bold text-xs md:text-sm">Resume</span>
-                      </Link>
+                  {/* Hover overlay shadow gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                    <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-accent-green text-white flex items-center justify-center shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                      <Play className="h-4 w-4 md:h-5 md:w-5 fill-current ml-1" />
                     </div>
                   </div>
+                </Link>
+
+                {/* Info Block */}
+                <div className="pt-2.5 pb-1 flex flex-col flex-1 bg-transparent">
+                  <h3 className="font-display font-bold text-[12px] md:text-[14px] text-center text-foreground line-clamp-2 leading-[1.4] h-[34px] md:h-[40px] group-hover:text-accent-green transition-colors duration-200" title={item.comicTitle}>
+                    <Link href={`/comic/${item.provider}/${item.comicId}`}>
+                      {item.comicTitle}
+                    </Link>
+                  </h3>
                 </div>
               </motion.div>
             ))}
