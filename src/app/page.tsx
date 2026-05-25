@@ -141,7 +141,7 @@ export default function HomePage() {
       
       {/* 1. Cinematic Hero Section */}
       <section className="w-full">
-        <div className="relative w-full overflow-hidden bg-background min-h-[550px] md:min-h-[650px] lg:min-h-[75vh] flex items-center">
+        <div className="relative w-full overflow-hidden bg-background min-h-[100svh] md:min-h-[650px] lg:min-h-[75vh] flex items-center">
           
           {trendingComics.length > 0 ? (
             <AnimatePresence mode="wait">
@@ -165,16 +165,16 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-background/90 hidden md:block" />
                 </div>
 
-                <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-col md:flex-row items-center gap-8 md:gap-14 h-full pt-24 pb-16">
+                <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-14 h-full pt-20 pb-20 md:pt-24 md:pb-16">
                   
                   {/* Left: Poster Image */}
                   <motion.div 
                     initial={{ opacity: 0, x: -30, scale: 0.95 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-                    className="w-3/5 sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center md:justify-end shrink-0"
+                    className="w-1/2 sm:w-2/5 md:w-1/3 lg:w-1/4 flex justify-center md:justify-end shrink-0"
                   >
-                    <div className="relative w-full max-w-[280px] aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl shadow-black/15 dark:shadow-black/50 border border-border-dark/20 group">
+                    <div className="relative w-full max-w-[180px] md:max-w-[280px] aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl shadow-black/15 dark:shadow-black/50 border border-border-dark/20 group">
                       <img 
                         src={trendingComics[currentSlide].cover_portrait_url || trendingComics[currentSlide].cover_image_url} 
                         alt={trendingComics[currentSlide].title}
@@ -189,13 +189,13 @@ export default function HomePage() {
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
-                    className="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-4 items-center md:items-start text-center md:text-left md:pr-12"
+                    className="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-3 md:gap-4 items-center md:items-start text-center md:text-left md:pr-12"
                   >
                     <div className="inline-flex items-center px-3 py-1 rounded-full border border-accent-green/30 bg-accent-green/20 text-[10px] font-extrabold tracking-wider text-accent-green uppercase backdrop-blur-md">
                       Top Trending
                     </div>
                     
-                    <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg">
+                    <h1 className="font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg">
                       {trendingComics[currentSlide].title}
                     </h1>
 
@@ -208,11 +208,11 @@ export default function HomePage() {
                       <span className="bg-surface/50 backdrop-blur-md px-2.5 py-1 rounded-lg border border-border-dark/50">Manga</span>
                     </div>
                     
-                    <p className="text-sm md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-3 md:line-clamp-4 mt-2">
+                    <p className="text-sm md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-3 md:line-clamp-4 mt-1 md:mt-2">
                       {trendingComics[currentSlide].description || "No description available."}
                     </p>
 
-                    <div className="flex flex-wrap gap-3 items-center mt-4 justify-center md:justify-start">
+                    <div className="flex flex-wrap gap-3 items-center mt-2 md:mt-4 justify-center md:justify-start">
                       <Link
                         href={trendingComics[currentSlide].latest_chapter_id ? `/read/shinigami/${trendingComics[currentSlide].manga_id}~${trendingComics[currentSlide].latest_chapter_id}` : `/comic/shinigami/${trendingComics[currentSlide].manga_id}`}
                         className="flex items-center gap-2 h-12 px-8 rounded-xl bg-accent-green hover:bg-green-600 text-sm font-bold text-white transition-all shadow-lg shadow-green-500/20 cursor-pointer"
@@ -246,11 +246,11 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-background/90 hidden md:block" />
               </div>
 
-              <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-col md:flex-row items-center gap-8 md:gap-14 h-full pt-24 pb-16">
+              <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-14 h-full pt-20 pb-20 md:pt-24 md:pb-16">
                 
                 {/* Left: Poster Image */}
-                <div className="w-3/5 sm:w-1/2 md:w-1/3 lg:w-1/4 flex justify-center md:justify-end shrink-0">
-                  <div className="relative w-full max-w-[280px] aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl shadow-black/15 dark:shadow-black/50 border border-border-dark/20 group">
+                <div className="w-1/2 sm:w-2/5 md:w-1/3 lg:w-1/4 flex justify-center md:justify-end shrink-0">
+                  <div className="relative w-full max-w-[180px] md:max-w-[280px] aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl shadow-black/15 dark:shadow-black/50 border border-border-dark/20 group">
                     <img 
                       src="https://assets.shngm.id/thumbnail/image/09919a8b39cb.jpeg" 
                       alt="Solo Leveling"
@@ -261,12 +261,12 @@ export default function HomePage() {
                 </div>
 
                 {/* Right: Details */}
-                <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-4 items-center md:items-start text-center md:text-left md:pr-12">
+                <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-3 md:gap-4 items-center md:items-start text-center md:text-left md:pr-12">
                   <div className="inline-flex items-center px-3 py-1 rounded-full border border-accent-green/30 bg-accent-green/20 text-[10px] font-extrabold tracking-wider text-accent-green uppercase backdrop-blur-md">
                     Spotlight Series
                   </div>
                   
-                  <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg">
+                  <h1 className="font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg">
                     Solo Leveling: <br />
                     <span className="bg-gradient-to-r from-accent-green via-emerald-400 to-teal-400 bg-clip-text text-transparent">
                       Na Honjaman Level Up
@@ -282,11 +282,11 @@ export default function HomePage() {
                     <span className="bg-surface/50 backdrop-blur-md px-2.5 py-1 rounded-lg border border-border-dark/50">Manhwa</span>
                   </div>
                   
-                  <p className="text-sm md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-3 md:line-clamp-4 mt-2">
+                  <p className="text-sm md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-3 md:line-clamp-4 mt-1 md:mt-2">
                     10 tahun yang lalu, setelah Gerbang yang menghubungkan dunia nyata dengan dunia monster terbuka, beberapa orang biasa menerima kekuatan untuk berburu monster di dalam Dungeon...
                   </p>
 
-                  <div className="flex flex-wrap gap-3 items-center mt-4 justify-center md:justify-start">
+                  <div className="flex flex-wrap gap-3 items-center mt-2 md:mt-4 justify-center md:justify-start">
                     <Link
                       href="/read/shinigami/5c612573-fe38-42df-8618-dc3de1c9d04a~latest-placeholder"
                       className="flex items-center gap-2 h-12 px-8 rounded-xl bg-accent-green hover:bg-green-600 text-sm font-bold text-white transition-all shadow-lg shadow-green-500/20 cursor-pointer"
@@ -309,7 +309,7 @@ export default function HomePage() {
 
           {/* Slider Indicators */}
           {trendingComics.length > 1 && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-12 z-30 flex gap-2">
+            <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-12 z-30 flex gap-2">
               {trendingComics.map((_, idx) => (
                 <button
                   key={idx}
