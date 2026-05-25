@@ -94,7 +94,7 @@ export class MangaFireProvider implements MangaProvider {
     this.baseUrl = process.env.MANGAFIRE_API_BASE_URL || "";
   }
 
-  async search(query: string, page = 1): Promise<ComicSearchResult[]> {
+  async search(query: string, page = 1, format = ""): Promise<ComicSearchResult[]> {
     if (this.baseUrl) {
       try {
         const response = await fetch(`${this.baseUrl}/api/search/${encodeURIComponent(query)}?page=${page}`, {

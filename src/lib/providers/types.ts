@@ -50,7 +50,7 @@ export type ChapterPages = {
 
 export interface MangaProvider {
   name: string;
-  search(query: string, page?: number): Promise<ComicSearchResult[]>;
+  search(query: string, page?: number, format?: string): Promise<ComicSearchResult[]>;
   getDetails(id: string): Promise<ComicDetail>;
   getChapters(id: string, options?: { language?: string; page?: number }): Promise<Chapter[]>;
   getPages(chapterId: string): Promise<ChapterPages>;

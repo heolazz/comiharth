@@ -12,17 +12,18 @@ function SearchContent() {
   const query = searchParams.get("q") || "";
   const providerParam = searchParams.get("provider") || "shinigami";
   const pageParam = parseInt(searchParams.get("page") || "1", 10);
+  const formatParam = searchParams.get("format") || "all";
 
   const [inputVal, setInputVal] = useState(query);
   const [activeProvider, setActiveProvider] = useState(providerParam);
   const [currentPage, setCurrentPage] = useState(pageParam);
+  const [selectedType, setSelectedType] = useState<string>(formatParam);
   const [results, setResults] = useState<ComicSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Filter & Sort States
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("relevance");
 
@@ -30,7 +31,8 @@ function SearchContent() {
   useEffect(() => {
     setActiveProvider(providerParam);
     setCurrentPage(pageParam);
-  }, [providerParam, pageParam]);
+    setSelectedType(formatParam);
+  }, [providerParam, pageParam, formatParam]);
 
   useEffect(() => {
     setInputVal(query);
@@ -41,7 +43,7 @@ function SearchContent() {
       try {
         const searchVal = query.trim() || "a";
         const res = await fetch(
-          `/api/search?q=${encodeURIComponent(searchVal)}&provider=${activeProvider}&page=${currentPage}`
+          `/api/search?q=${encodeURIComponent(searchVal)}&provider=${activeProvider}&page=${currentPage}&format=${selectedType}`
         );
         
         if (res.ok) {
@@ -62,37 +64,42 @@ function SearchContent() {
     };
 
     performSearch();
-  }, [query, activeProvider, currentPage]);
+  }, [query, activeProvider, currentPage, selectedType]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${activeProvider}&page=1`);
+    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${activeProvider}&page=1&format=${selectedType}`);
   };
 
   const handleProviderChange = (prov: string) => {
     setActiveProvider(prov);
-    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${prov}&page=1`);
+    router.push(`/search?q=${encodeURIComponent(inputVal.trim())}&provider=${prov}&page=1&format=${selectedType}`);
   };
 
   const handlePageChange = (newPage: number) => {
-    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=${newPage}`);
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=${newPage}&format=${selectedType}`);
+  };
+
+  const handleTypeChange = (t: string) => {
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=1&format=${t}`);
+  };
+
+  const handleResetFilters = () => {
+    setSelectedStatus("all");
+    setSortBy("relevance");
+    router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=1&format=all`);
   };
 
   // ⚡ Client-side Instant Filter & Sort calculation
   const processedResults = useMemo(() => {
     let list = [...results];
 
-    // 1. Filter by Type
-    if (selectedType !== "all") {
-      list = list.filter((item) => item.type === selectedType);
-    }
-
-    // 2. Filter by Status
+    // 1. Filter by Status
     if (selectedStatus !== "all") {
       list = list.filter((item) => item.status === selectedStatus);
     }
 
-    // 3. Apply Sorting
+    // 2. Apply Sorting
     if (sortBy === "title-asc") {
       list.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortBy === "title-desc") {
@@ -100,7 +107,7 @@ function SearchContent() {
     }
 
     return list;
-  }, [results, selectedType, selectedStatus, sortBy]);
+  }, [results, selectedStatus, sortBy]);
 
   // Active filter counter
   const activeFiltersCount = useMemo(() => {
@@ -110,12 +117,6 @@ function SearchContent() {
     if (sortBy !== "relevance") count++;
     return count;
   }, [selectedType, selectedStatus, sortBy]);
-
-  const handleResetFilters = () => {
-    setSelectedType("all");
-    setSelectedStatus("all");
-    setSortBy("relevance");
-  };
 
   // Dynamic Pagination Boundary: Shinigami serves 24 items per page
   const hasNextPage = results.length === 24;
@@ -236,7 +237,7 @@ function SearchContent() {
                 {["all", "manga", "manhwa", "manhua"].map((t) => (
                   <button
                     key={t}
-                    onClick={() => setSelectedType(t)}
+                    onClick={() => handleTypeChange(t)}
                     className={`h-9 px-4 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer flex items-center gap-1.5 ${
                       selectedType === t
                         ? "bg-accent-green/10 border-accent-green text-accent-green border"

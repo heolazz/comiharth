@@ -4,7 +4,7 @@ export class ShinigamiProvider implements MangaProvider {
   name = "shinigami";
   private apiBase = "https://api.shngm.io/v1";
 
-  async search(query: string, page = 1): Promise<ComicSearchResult[]> {
+  async search(query: string, page = 1, format = ""): Promise<ComicSearchResult[]> {
     try {
       const limit = 24;
       const url = new URL(`${this.apiBase}/manga/list`);
@@ -13,6 +13,11 @@ export class ShinigamiProvider implements MangaProvider {
       url.searchParams.set("sort", "latest");
       url.searchParams.set("sort_order", "desc");
       
+      // Pass format query filter to Shinigami API if defined (manga, manhwa, manhua)
+      if (format && format !== "all") {
+        url.searchParams.set("format", format.trim().toLowerCase());
+      }
+
       // If query is valid, perform full text filtering using the API's q search query param
       if (query && query.trim() && query.trim() !== "a") {
         url.searchParams.set("q", query.trim());

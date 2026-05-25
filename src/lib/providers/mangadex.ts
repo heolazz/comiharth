@@ -5,7 +5,7 @@ export class MangaDexProvider implements MangaProvider {
   private apiBase = "https://api.mangadex.org";
   private cdnBase = "https://uploads.mangadex.org";
 
-  async search(query: string, page = 1): Promise<ComicSearchResult[]> {
+  async search(query: string, page = 1, format = ""): Promise<ComicSearchResult[]> {
     try {
       const limit = 20;
       const offset = (page - 1) * limit;

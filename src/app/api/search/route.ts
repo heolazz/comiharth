@@ -7,13 +7,14 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get("q") || "";
     const providerName = searchParams.get("provider") || "shinigami";
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const format = searchParams.get("format") || "";
 
     if (!query) {
       return NextResponse.json({ success: true, data: [] });
     }
 
     const provider = getProvider(providerName);
-    const results = await provider.search(query, page);
+    const results = await provider.search(query, page, format);
 
     return NextResponse.json({ success: true, data: results });
   } catch (error: any) {
