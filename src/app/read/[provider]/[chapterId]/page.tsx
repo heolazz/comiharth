@@ -425,18 +425,6 @@ export default function ReaderPage({
 
       </div>
 
-      {/* Smart Next Chapter at the bottom */}
-      {preferences.mode === "vertical" && pagesData.nextChapterId && (
-        <div className="w-full py-16 flex items-center justify-center border-t border-border-dark/10">
-          <Link
-            href={`/read/${provider}/${pagesData.nextChapterId}`}
-            className="flex items-center gap-3 px-8 h-14 rounded-full bg-accent-green hover:bg-green-600 text-white font-bold transition-all hover:scale-105 active:scale-95"
-          >
-            Continue to Next Chapter
-            <ArrowRight className="h-5 w-5" />
-          </Link>
-        </div>
-      )}
 
       {/* 4. Bottom Floating Navigation (Auto scroll + Prev/Next) */}
       <div 
