@@ -6,7 +6,7 @@ import { ChapterPages, Chapter, ComicDetail } from "@/lib/providers/types";
 import ReaderToolbar from "@/components/reader/ReaderToolbar";
 import ReaderSettings, { ReaderPreferences } from "@/components/reader/ReaderSettings";
 import ChapterNavigation from "@/components/reader/ChapterNavigation";
-import { Loader2, ArrowLeft, ArrowRight, RefreshCw, Play, Pause, SkipBack, SkipForward, Plus, Minus, Maximize, Minimize, ChevronUp } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight, RefreshCw, Play, Pause, SkipBack, SkipForward, Plus, Minus, Maximize, Minimize, ChevronUp, ChevronDown } from "lucide-react";
 
 export default function ReaderPage({
   params,
@@ -523,17 +523,29 @@ export default function ReaderPage({
         />
       </div>
 
-      {/* Back to Top Button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        className={`fixed bottom-20 right-6 md:right-10 z-40 p-3 rounded-full bg-surface/80 backdrop-blur-md border border-border-dark text-foreground transition-all duration-300 hover:bg-surface-hover ${scrollProgress > 10 && !isOverlayVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
-        title="Back to Top"
-      >
-        <ChevronUp className="h-6 w-6" />
-      </button>
+      {/* Floating Action Buttons (Top/Bottom) - Only show when overlay is visible */}
+      <div className={`fixed bottom-24 right-4 md:right-8 z-40 flex flex-col gap-2 transition-all duration-300 ${isOverlayVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}`}>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className="p-2.5 md:p-3 rounded-full bg-surface/90 backdrop-blur-md border border-border-dark text-foreground hover:bg-surface-hover shadow-lg"
+          title="Back to Top"
+        >
+          <ChevronUp className="h-5 w-5 md:h-6 md:w-6" />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          }}
+          className="p-2.5 md:p-3 rounded-full bg-surface/90 backdrop-blur-md border border-border-dark text-foreground hover:bg-surface-hover shadow-lg"
+          title="Go to Bottom"
+        >
+          <ChevronDown className="h-5 w-5 md:h-6 md:w-6" />
+        </button>
+      </div>
 
     </div>
   );
