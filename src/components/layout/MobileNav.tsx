@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, Bookmark, History } from "lucide-react";
+import { Home, Compass, Bookmark, History } from "lucide-react";
 
 export default function MobileNav() {
   const pathname = usePathname();
 
   const links = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/search", label: "Search", icon: Search },
+    { href: "/search", label: "Explore", icon: Compass },
     { href: "/library", label: "Library", icon: Bookmark },
     { href: "/history", label: "History", icon: History },
   ];

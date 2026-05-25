@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { Search, Bookmark, History, Home, Flame, Sun, Moon } from "lucide-react";
+import { Search, Bookmark, History, Home, Flame, Sun, Moon, Compass } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -27,6 +27,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Home", icon: Home },
+    { href: "/search", label: "Explore", icon: Compass },
     { href: "/library", label: "Library", icon: Bookmark },
     { href: "/history", label: "History", icon: History },
   ];
