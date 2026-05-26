@@ -66,38 +66,26 @@ export default function HistoryPage() {
   return (
     <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8 py-10 md:py-16 flex flex-col gap-8 md:gap-12 transition-colors duration-500 overflow-hidden relative">
 
-      {/* Playful Title Header */}
+      {/* Title Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 relative z-10">
-        <div className="flex flex-col gap-2 md:gap-3">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2"
-          >
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-black text-foreground tracking-tight flex items-center gap-3">
-              Your Shelf
-            </h1>
-          </motion.div>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-sm md:text-base text-muted-text font-bold max-w-xl"
-          >
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl md:text-3xl font-display font-extrabold text-foreground flex items-center gap-2">
+            <History className="h-6 w-6 text-accent-green" />
+            Reading History
+          </h1>
+          <p className="text-xs text-muted-text font-semibold">
             Welcome back! Ready to dive back into your favorite worlds?
-          </motion.p>
+          </p>
         </div>
 
         {historyList.length > 0 && (
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <button
             onClick={clearHistory}
-            className="flex h-9 w-fit items-center justify-center gap-2 px-4 rounded-xl border border-border-dark/50 bg-surface hover:bg-surface-hover text-xs font-bold text-muted-text hover:text-accent-green hover:border-accent-green/30 transition-all cursor-pointer group"
+            className="flex h-9 w-fit items-center justify-center gap-2 px-4 rounded-xl border border-border-dark/50 bg-surface hover:bg-surface-hover text-xs font-bold text-muted-text hover:text-accent-green hover:border-accent-green/30 transition-all cursor-pointer"
           >
-            <Trash2 className="h-3.5 w-3.5 group-hover:animate-bounce" />
+            <Trash2 className="h-3.5 w-3.5" />
             <span>Clear History</span>
-          </motion.button>
+          </button>
         )}
       </div>
 
