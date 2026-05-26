@@ -6,6 +6,7 @@ import { ChapterPages, Chapter, ComicDetail } from "@/lib/providers/types";
 import ReaderToolbar from "@/components/reader/ReaderToolbar";
 import ReaderSettings, { ReaderPreferences } from "@/components/reader/ReaderSettings";
 import ChapterNavigation from "@/components/reader/ChapterNavigation";
+import ChapterComments from "@/components/reader/ChapterComments";
 import { Loader2, ArrowLeft, ArrowRight, RefreshCw, Play, Pause, SkipBack, SkipForward, Plus, Minus, Maximize, Minimize, ChevronUp, ChevronDown } from "lucide-react";
 
 export default function ReaderPage({
@@ -500,7 +501,7 @@ export default function ReaderPage({
 
       {/* 5. Bottom List Link (Static at the end of the content) */}
       <div 
-        className="border-t border-border-dark/25 w-full bg-surface/30 mt-auto"
+        className="border-t border-border-dark/25 w-full bg-surface/30 mt-auto flex flex-col gap-8 pb-16"
         onClick={(e) => e.stopPropagation()}
       >
         <ChapterNavigation
@@ -509,6 +510,14 @@ export default function ReaderPage({
           nextChapterId={pagesData.nextChapterId}
           previousChapterId={pagesData.previousChapterId}
         />
+
+        {/* Dynamic Comments Section */}
+        <div className="px-4 md:px-8">
+          <ChapterComments 
+            chapterId={chapterId} 
+            theme={preferences.theme} 
+          />
+        </div>
       </div>
 
       {/* Floating Action Buttons (Top/Bottom) - Only show when overlay is visible */}
