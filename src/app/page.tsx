@@ -25,7 +25,7 @@ export default function HomePage() {
   const [history, setHistory] = useState<ReadingHistoryItem[]>([]);
   const [trendingComics, setTrendingComics] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+
   // Feed States
   const [recommendedComics, setRecommendedComics] = useState<{
     manhwa: ComicSearchResult[];
@@ -33,7 +33,7 @@ export default function HomePage() {
     manhua: ComicSearchResult[];
   }>({ manhwa: [], manga: [], manhua: [] });
   const [recTab, setRecTab] = useState<"manhwa" | "manga" | "manhua">("manhwa");
-  
+
   const [recentComics, setRecentComics] = useState<{
     manhwa: ComicSearchResult[];
     manga: ComicSearchResult[];
@@ -46,7 +46,7 @@ export default function HomePage() {
     allTime: ComicSearchResult[];
   }>({ daily: [], weekly: [], allTime: [] });
   const [popularTab, setPopularTab] = useState<"daily" | "weekly" | "allTime">("daily");
-  
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -119,7 +119,7 @@ export default function HomePage() {
   // Auto slide interval
   useEffect(() => {
     if (trendingComics.length === 0) return;
-    
+
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % trendingComics.length);
     }, 7000); // 7 seconds
@@ -138,11 +138,11 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col gap-16 pb-20 transition-colors duration-300">
-      
+
       {/* 1. Cinematic Hero Section */}
       <section className="w-full">
         <div className="relative w-full overflow-hidden bg-background min-h-[450px] md:min-h-[650px] lg:min-h-[75vh] flex items-center">
-          
+
           {trendingComics.length > 0 ? (
             <AnimatePresence mode="wait">
               <motion.div
@@ -166,17 +166,17 @@ export default function HomePage() {
                 </div>
 
                 <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-row items-center justify-center gap-4 md:gap-14 h-full pt-24 pb-12 md:pt-32 md:pb-16">
-                  
+
                   {/* Left: Poster Image */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, x: -30, scale: 0.95 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
                     className="w-[35%] sm:w-[30%] md:w-1/3 lg:w-1/4 flex justify-end shrink-0"
                   >
                     <div className="relative w-full max-w-[140px] md:max-w-[280px] aspect-[2/3] rounded-xl md:rounded-2xl overflow-hidden shadow-2xl shadow-black/15 dark:shadow-black/50 border border-border-dark/20 group">
-                      <img 
-                        src={trendingComics[currentSlide].cover_portrait_url || trendingComics[currentSlide].cover_image_url} 
+                      <img
+                        src={trendingComics[currentSlide].cover_portrait_url || trendingComics[currentSlide].cover_image_url}
                         alt={trendingComics[currentSlide].title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
@@ -185,7 +185,7 @@ export default function HomePage() {
                   </motion.div>
 
                   {/* Right: Details */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
@@ -194,7 +194,7 @@ export default function HomePage() {
                     <div className="inline-flex items-center px-2 py-0.5 md:px-3 md:py-1 rounded-full border border-accent-green/30 bg-accent-green/20 text-[8px] md:text-[10px] font-extrabold tracking-wider text-accent-green uppercase backdrop-blur-md">
                       Top Trending
                     </div>
-                    
+
                     <h1 className="font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-tight dark:drop-shadow-lg line-clamp-3">
                       {trendingComics[currentSlide].title}
                     </h1>
@@ -207,7 +207,7 @@ export default function HomePage() {
                       <span className="bg-surface/50 backdrop-blur-md px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-md md:rounded-lg border border-border-dark/50">Ongoing</span>
                       <span className="bg-surface/50 backdrop-blur-md px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-md md:rounded-lg border border-border-dark/50 hidden sm:inline-flex">Manga</span>
                     </div>
-                    
+
                     <p className="text-[11px] sm:text-xs md:text-base text-foreground/70 max-w-4xl leading-relaxed font-medium line-clamp-3 md:line-clamp-3 mt-1 md:mt-2">
                       {trendingComics[currentSlide].description || "No description available."}
                     </p>
@@ -240,7 +240,7 @@ export default function HomePage() {
               </div>
 
               <div className="relative z-20 mx-auto w-full max-w-[1400px] px-4 md:px-8 flex flex-row items-center justify-center gap-4 md:gap-14 h-full pt-24 pb-12 md:pt-32 md:pb-16">
-                
+
                 {/* Left: Poster Image Placeholder */}
                 <div className="w-[35%] sm:w-[30%] md:w-1/3 lg:w-1/4 flex justify-end shrink-0">
                   <div className="relative w-full max-w-[140px] md:max-w-[280px] aspect-[2/3] rounded-xl md:rounded-2xl overflow-hidden bg-border-dark/20 dark:bg-border-dark/40 border border-border-dark/20"></div>
@@ -249,7 +249,7 @@ export default function HomePage() {
                 {/* Right: Details Placeholder */}
                 <div className="w-[65%] sm:w-[70%] md:w-2/3 lg:w-3/4 flex flex-col gap-2 md:gap-4 items-start text-left md:pr-12">
                   <div className="w-20 md:w-24 h-4 md:h-6 rounded-full bg-border-dark/20 dark:bg-border-dark/40"></div>
-                  
+
                   <div className="w-3/4 h-6 md:h-12 bg-border-dark/30 dark:bg-border-dark/50 rounded-md mt-1 md:mt-2"></div>
                   <div className="w-1/2 h-6 md:h-12 bg-border-dark/30 dark:bg-border-dark/50 rounded-md"></div>
 
@@ -257,7 +257,7 @@ export default function HomePage() {
                     <div className="w-12 md:w-16 h-4 md:h-6 bg-border-dark/20 dark:bg-border-dark/40 rounded-md"></div>
                     <div className="w-16 md:w-20 h-4 md:h-6 bg-border-dark/20 dark:bg-border-dark/40 rounded-md"></div>
                   </div>
-                  
+
                   <div className="w-full h-3 md:h-4 bg-border-dark/10 dark:bg-border-dark/30 rounded-md mt-2 md:mt-4"></div>
                   <div className="w-full h-3 md:h-4 bg-border-dark/10 dark:bg-border-dark/30 rounded-md"></div>
                   <div className="w-2/3 h-3 md:h-4 bg-border-dark/10 dark:bg-border-dark/30 rounded-md"></div>
@@ -322,7 +322,7 @@ export default function HomePage() {
               Continue Reading
             </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {history.map((item) => (
               <div
@@ -345,7 +345,7 @@ export default function HomePage() {
                     {new Date(item.lastReadAt).toLocaleDateString()}
                   </span>
                 </div>
-                
+
                 <Link
                   href={`/read/${item.provider}/${item.chapterId}`}
                   className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface border border-border-dark hover:bg-accent-green hover:border-accent-green text-muted-text hover:text-white transition-all cursor-pointer"
@@ -373,11 +373,10 @@ export default function HomePage() {
               <button
                 key={tab}
                 onClick={() => setRecTab(tab)}
-                className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
-                  recTab === tab 
-                    ? "bg-accent-green text-white shadow-sm" 
+                className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${recTab === tab
+                    ? "bg-accent-green text-white shadow-sm"
                     : "text-muted-text hover:text-foreground hover:bg-surface"
-                }`}
+                  }`}
               >
                 {tab}
               </button>
@@ -424,11 +423,10 @@ export default function HomePage() {
               <button
                 key={tab}
                 onClick={() => setRecentTab(tab)}
-                className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
-                  recentTab === tab 
-                    ? "bg-accent-green text-white shadow-sm" 
+                className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${recentTab === tab
+                    ? "bg-accent-green text-white shadow-sm"
                     : "text-muted-text hover:text-foreground hover:bg-surface"
-                }`}
+                  }`}
               >
                 {tab}
               </button>
@@ -469,17 +467,16 @@ export default function HomePage() {
               Popular Comics
             </h2>
           </div>
-          
+
           <div className="flex items-center gap-2 bg-surface/50 p-1 rounded-xl border border-border-dark/30 self-start sm:self-auto">
             {(["daily", "weekly", "allTime"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setPopularTab(tab)}
-                className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
-                  popularTab === tab 
-                    ? "bg-accent-green text-white shadow-sm" 
+                className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${popularTab === tab
+                    ? "bg-accent-green text-white shadow-sm"
                     : "text-muted-text hover:text-foreground hover:bg-surface"
-                }`}
+                  }`}
               >
                 {tab === "allTime" ? "All Time" : tab}
               </button>
@@ -512,59 +509,79 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* 7. Sister Site Promo Banner (KinoHarth) */}
-      <section className="mx-auto w-full max-w-[1400px] px-4 md:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-[#ff6568]/20 bg-gradient-to-br from-[#460809]/40 via-zinc-950 to-black p-8 md:p-12 shadow-2xl shadow-red-950/20 flex flex-col md:flex-row items-center justify-between gap-8 group">
-          {/* Glowing background decorations */}
-          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#ff6568]/8 rounded-full blur-3xl pointer-events-none group-hover:bg-[#ff6568]/12 transition-all duration-700" />
-          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#f99c00]/5 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Left Side: Content & Branding */}
-          <div className="flex flex-col gap-4 text-center md:text-left z-10 max-w-xl">
-            <div className="inline-flex self-center md:self-start items-center gap-1.5 px-3 py-1 rounded-full border border-[#ff6568]/30 bg-[#ff6568]/10 text-[10px] font-extrabold tracking-wider text-[#ff6568] uppercase backdrop-blur-md animate-pulse">
-              <Zap className="h-3 w-3 fill-current animate-bounce text-[#ff6568]" /> Sister Platform
-            </div>
+      {/* 7. Sister Site Promo Banner (KinoHarth) - Ghibli Vibe */}
+      <section className="mx-auto w-full max-w-[1400px] px-4 md:px-8 mb-8">
+        <div className="relative overflow-hidden rounded-3xl group shadow-2xl min-h-[300px] md:min-h-[400px] flex items-center border border-white/10">
+          {/* Ghibli Background Image */}
+          <div className="absolute inset-0 z-0 bg-zinc-900">
+            <img 
+              src="/banner-watch.png" 
+              alt="Ghibli Vibe Banner" 
+              className="w-full h-full object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-105"
+            />
+            {/* Soft Overlay for Readability - matching Ghibli's warmth */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
             
-            <div className="flex flex-col gap-3 items-center md:items-start">
-              <img src="/logo-kinoharth.png" alt="KinoHarth Logo" className="h-10 md:h-12 w-auto object-contain transition-transform duration-500 group-hover:scale-105" />
-              <h2 className="font-display text-xl md:text-3xl font-extrabold tracking-tight text-white leading-tight mt-1">
-                Selesai Membaca? <br className="hidden md:inline" />
-                Saatnya Streaming Anime Favoritmu!
-              </h2>
-            </div>
-            
-            <p className="text-xs md:text-sm text-zinc-400 font-medium leading-relaxed">
-              Lanjutkan keseruan dari lembaran komik langsung ke layar animasi! Nikmati ribuan judul anime terbaru secara gratis dengan kualitas super jernih, pemutaran instan tanpa buffering, dan sepenuhnya bebas iklan.
-            </p>
-            
-            <div className="text-[9px] md:text-[10px] text-zinc-400 font-bold tracking-wider uppercase flex flex-wrap items-center justify-center md:justify-start gap-2 mt-1">
-              <span className="bg-zinc-900/80 border border-zinc-800 px-2.5 py-1 rounded-lg">Streaming HD</span>
-              <span className="bg-zinc-900/80 border border-[#ff6568]/20 text-[#ff6568] px-2.5 py-1 rounded-lg">English Sub</span>
-              <span className="bg-zinc-900/80 border border-zinc-800 px-2.5 py-1 rounded-lg">Zero Ads</span>
-              <span className="bg-zinc-900/80 border border-zinc-800 px-2.5 py-1 rounded-lg">Fast Loading</span>
-            </div>
+            {/* Warm magical glow */}
+            <div className="absolute -left-32 top-0 w-[500px] h-[500px] bg-[#ff6568]/15 rounded-full blur-[100px] mix-blend-screen pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#f99c00]/10 rounded-full blur-[80px] mix-blend-screen pointer-events-none" />
           </div>
 
-          {/* Right Side: CTA Button and Visual Preview */}
-          <div className="flex flex-col sm:flex-row items-center gap-6 z-10 shrink-0">
-            <a
-              href="https://kinoharth.online"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 h-12 px-8 rounded-2xl bg-gradient-to-r from-[#fb2c36] to-[#f99c00] hover:from-[#ff6568] hover:to-[#ffb96d] text-sm font-bold text-white transition-all shadow-lg shadow-[#fb2c36]/20 hover:shadow-[#fb2c36]/35 hover:scale-[1.02] cursor-pointer"
-            >
-              <Play className="h-4 w-4 fill-current" />
-              <span>Mulai Streaming</span>
-            </a>
-            
-            <a
-              href="https://kinoharth.online"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-bold text-zinc-400 hover:text-white transition-colors"
-            >
-              Kunjungi kinoharth.online
-            </a>
+          {/* Content & Branding */}
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 p-8 md:p-14 w-full h-full">
+            <div className="flex flex-col gap-6 text-center md:text-left max-w-2xl w-full">
+              
+              {/* Giant Logo */}
+              <div className="flex flex-col gap-2 items-center md:items-start">
+                <img 
+                  src="/logo-kinoharth.png" 
+                  alt="KinoHarth Logo" 
+                  className="h-16 md:h-24 lg:h-28 w-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-105" 
+                />
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-xl">
+                  Lanjutkan Petualangan <br className="hidden md:inline" />
+                  ke Dunia Animasi!
+                </h2>
+                
+                <p className="text-xs md:text-sm text-zinc-200 font-medium leading-relaxed max-w-xl drop-shadow-md">
+                  Selesai membaca? Mari nikmati ribuan mahakarya anime dengan kualitas HD yang memanjakan mata, terjemahan bahasa Inggris yang akurat, dan tanpa gangguan iklan.
+                </p>
+              </div>
+              
+              <div className="text-[9px] md:text-[10px] text-white font-bold tracking-wider uppercase flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2">
+                <span className="bg-black/40 backdrop-blur-md border border-white/20 px-3.5 py-1.5 rounded-xl shadow-lg">Streaming HD</span>
+                <span className="bg-black/40 backdrop-blur-md border border-[#ff6568]/50 text-[#ffb96d] px-3.5 py-1.5 rounded-xl shadow-[0_0_15px_rgba(255,101,104,0.3)]">English Sub</span>
+                <span className="bg-black/40 backdrop-blur-md border border-white/20 px-3.5 py-1.5 rounded-xl shadow-lg">Zero Ads</span>
+              </div>
+            </div>
+
+            {/* Right Side: CTA Button */}
+            <div className="flex flex-col items-center gap-4 shrink-0 pt-6 md:pt-0">
+              <a
+                href="https://kinoharth.online"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group/btn relative flex items-center justify-center gap-3 h-14 md:h-16 px-8 md:px-10 rounded-full overflow-hidden shadow-[0_0_40px_rgba(255,101,104,0.4)] hover:shadow-[0_0_60px_rgba(255,101,104,0.6)] transition-all duration-300 hover:scale-105"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-[#fb2c36] to-[#f99c00] opacity-90 group-hover/btn:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-black/10 group-hover/btn:bg-transparent transition-colors duration-300" />
+                <Play className="h-5 w-5 md:h-6 md:w-6 fill-white text-white relative z-10" />
+                <span className="text-sm md:text-base font-extrabold text-white relative z-10 tracking-wide uppercase">Mulai Menonton</span>
+              </a>
+              
+              <a
+                href="https://kinoharth.online"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold text-zinc-300/80 hover:text-white drop-shadow-md transition-colors"
+              >
+                Kunjungi kinoharth.online
+              </a>
+            </div>
           </div>
         </div>
       </section>
