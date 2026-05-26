@@ -36,6 +36,7 @@ export default function ComicDetailPage({
   const [isFavorited, setIsFavorited] = useState(false);
   const [resumeChapterId, setResumeChapterId] = useState<string | null>(null);
   const [resumeChapterNum, setResumeChapterNum] = useState<string | null>(null);
+  const [commentsTheme, setCommentsTheme] = useState<"white" | "gray" | "black">("white");
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -90,6 +91,19 @@ export default function ComicDetailPage({
         if (item) {
           setResumeChapterId(item.chapterId);
           setResumeChapterNum(item.chapterNumber);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Check reader preferences for comments theme
+    const savedPrefs = localStorage.getItem("comiharth-reader-prefs");
+    if (savedPrefs) {
+      try {
+        const parsedPrefs = JSON.parse(savedPrefs);
+        if (parsedPrefs.theme) {
+          setCommentsTheme(parsedPrefs.theme);
         }
       } catch (e) {
         console.error(e);
@@ -313,7 +327,7 @@ export default function ComicDetailPage({
             <Comments 
               id={id} 
               type="series"
-              theme="black" 
+              theme={commentsTheme} 
             />
           </section>
         )}
