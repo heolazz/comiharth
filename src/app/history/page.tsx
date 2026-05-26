@@ -111,35 +111,24 @@ export default function HistoryPage() {
           <p className="text-base text-foreground font-bold animate-pulse">Summoning your comics...</p>
         </div>
       ) : historyList.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", bounce: 0.5 }}
-          className="rounded-[40px] border-2 border-dashed border-border-dark/60 bg-surface/30 p-16 text-center flex flex-col items-center justify-center gap-6 max-w-xl mx-auto mt-10 backdrop-blur-md relative overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-accent-green/5 to-transparent pointer-events-none" />
-          <motion.div
-            animate={{ y: [-10, 10, -10] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="h-28 w-28 rounded-[32px] bg-gradient-to-br from-accent-green/20 to-teal-500/20 border-2 border-accent-green/30 flex items-center justify-center shadow-inner relative"
-          >
-            <Compass className="h-14 w-14 text-accent-green drop-shadow-md" />
-            <Sparkles className="absolute -top-3 -right-3 h-8 w-8 text-yellow-400 animate-pulse" />
-          </motion.div>
-          <div className="flex flex-col gap-2 relative z-10">
-            <h3 className="text-2xl font-black text-foreground">It's so empty here!</h3>
-            <p className="text-sm text-muted-text mx-auto font-bold leading-relaxed max-w-xs">
-              Go explore some amazing comics and start your adventure. Your journey will be recorded right here.
+        <div className="rounded-3xl border border-border-dark/40 bg-surface/30 p-16 text-center flex flex-col items-center justify-center gap-4 max-w-lg mx-auto mt-6">
+          <div className="h-16 w-16 rounded-2xl bg-accent-green/10 border border-accent-green/20 flex items-center justify-center">
+            <History className="h-8 w-8 text-accent-green" />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <h3 className="text-base font-bold text-foreground">Your history is currently empty</h3>
+            <p className="text-xs text-muted-text max-w-xs mx-auto font-medium leading-relaxed">
+              Go explore some amazing comics and start your adventure. Your reading journey will be saved right here.
             </p>
           </div>
           <Link
             href="/"
-            className="flex items-center gap-2 h-14 px-8 rounded-full bg-accent-green hover:bg-green-600 text-base font-bold text-white transition-all cursor-pointer mt-4 shadow-xl shadow-green-500/30 hover:scale-110 active:scale-95 relative z-10"
+            className="flex items-center gap-2 h-10 px-5 rounded-xl bg-accent-green hover:bg-green-600 text-xs font-bold text-white transition-colors cursor-pointer mt-2 shadow-md glow-green-sm"
           >
-            <Flame className="h-5 w-5" />
-            <span>Let's Explore!</span>
+            <Compass className="h-4 w-4" />
+            <span>Discover Comics</span>
           </Link>
-        </motion.div>
+        </div>
       ) : (
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-5">
           <AnimatePresence>

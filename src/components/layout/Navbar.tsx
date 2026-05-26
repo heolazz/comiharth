@@ -49,7 +49,7 @@ export default function Navbar() {
       <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         isTransparent 
           ? "bg-gradient-to-b from-white/95 via-white/70 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent border-transparent" 
-          : "bg-background shadow-sm border-b border-border-dark/30"
+          : `bg-background border-b border-border-dark/30 ${isScrolled ? "shadow-sm" : "shadow-none"}`
       }`}>
         <div className="mx-auto flex max-w-[1400px] h-20 items-center justify-between px-4 md:px-8">
           
