@@ -1,82 +1,70 @@
-# 📚 ComiHarth
+# ComiHarth
 
-> **ComiHarth** adalah platform Web Comic Reader (Manga, Manhwa, Manhua) premium, modern, dan sangat responsif. Didesain menggunakan **Next.js 15 App Router** dengan antarmuka sinematik gelap (*dark mode*) yang memukau dan dihiasi aksen warna hijau khas (`#00C853`).
+ComiHarth is a premium, responsive, and modern Web Comic Reader (Manga, Manhwa, Manhua) built with Next.js 15 App Router. The application features a cinematic dark mode interface accented with ComiHarth's signature green color (`#00C853`).
 
----
+## Key Features
 
-## ✨ Fitur Utama
+- **Cinematic Hero Slider:** Spotlights trending comics with blurred backdrops and smooth poster animations.
+- **Premium Web Reader UI:** An optimized Webtoon-style scrolling reader designed for a seamless reading experience on both desktop and mobile devices.
+- **Reading History:** Uses local storage to cache reading progress, allowing users to quickly resume reading directly from the home page.
+- **Dynamic Comment Section:** Integrates a dynamic comments section proxied through the Shinigami API, featuring smooth anchor-based scrolling.
+- **Ecosystem Integration (KinoHarth):**
+  - Seamless ecosystem redirection to **KinoHarth** (a free anime streaming sister platform).
+  - Features an interactive, pulsating green online status indicator badge in the footer.
+  - Houses a custom, high-fidelity Ghibli-themed promotional banner at the bottom of the home page with a large partner logo and matching green glow accents.
 
-- 🎬 **Cinematic Hero Slider:** Menampilkan komik terpopuler (*trending*) dengan efek latar belakang buram (*blurred backdrop*) dan animasi poster yang halus.
-- 📖 **Premium Web Reader UI:** Halaman pembaca komik bergaya *Webtoon scrolling* yang dirancang secara khusus untuk kenyamanan membaca di desktop maupun perangkat mobile.
-- ⏱️ **Reading History (Riwayat Membaca):** Menyimpan riwayat bacaan terakhir Anda secara lokal sehingga Anda dapat melanjutkan petualangan membaca langsung dari halaman beranda (*Home*).
-- 💬 **Dynamic Comment Section:** Integrasi section komentar yang dinamis, terhubung via Shinigami API proxy, lengkap dengan transisi *smooth scrolling* saat tombol ulasan diklik.
-- 🍃 **Sister Site Ecosystem Integration (KinoHarth):**
-  * Kolaborasi ekosistem bersama **KinoHarth** (Platform Streaming Anime gratis terpopuler).
-  * Dilengkapi dengan *Footer Badge* berkedip (*pulsing dot*) yang interaktif.
-  * Dilengkapi dengan **Ghibli-themed Banner** sinematik di bagian paling bawah halaman utama yang memikat menggunakan visual ajaib Ghibli dan integrasi logo berukuran besar.
+## Tech Stack & Core Dependencies
 
----
-
-## 🛠️ Tech Stack & Dependencies
-
-| Teknologi | Keterangan |
+| Technology | Description |
 | :--- | :--- |
-| **Next.js 15** | Framework React utama dengan App Router & server-side rendering support. |
-| **React 19** | Library JavaScript untuk membangun antarmuka pengguna berbasis komponen. |
-| **Tailwind CSS v4** | Framework utilitas CSS modern untuk desain yang bersih dan responsif. |
-| **Framer Motion** | Engine animasi berkualitas tinggi untuk transisi UI yang premium dan hidup. |
-| **Lucide React** | Library ikon vektor premium yang tajam dan bersih. |
+| **Next.js 15** | Core framework with App Router, server component rendering, and optimized performance. |
+| **React 19** | Component-driven user interface library. |
+| **Tailwind CSS v4** | Modern utility-first CSS framework for clean, responsive designs. |
+| **Framer Motion** | Animation engine for premium, fluid, and hardware-accelerated UI transitions. |
+| **Lucide React** | High-quality, scalable SVG vector icons. |
 
----
-
-## 📂 Struktur Proyek
+## Project Structure
 
 ```bash
 ComiHarth/
 ├── src/
-│   ├── app/                 # Next.js App Router Pages (Home, Library, Read, History, dll.)
-│   │   ├── page.tsx         # Halaman Utama (Home) dengan slider & KinoHarth Banner
-│   │   ├── globals.css      # Styling CSS global dan definisi variabel warna
-│   │   └── layout.tsx       # Layout utama aplikasi
-│   └── components/          # Reusable UI Components
-│       ├── layout/          # Header, Footer (dengan KinoHarth Badge)
-│       └── ui/              # ComicGrid, SearchBar, SkeletonLoader, dll.
-├── public/                  # Static Assets
-│   ├── logo.png             # Logo resmi ComiHarth
-│   ├── logo-kinoharth.png   # Logo resmi partner KinoHarth (Large)
-│   ├── banner-watch.png     # Banner promosi bertema Ghibli
-│   └── logo-favicon.ico     # Favicon aplikasi
-└── .gitignore               # Daftar file yang diabaikan oleh Git (Termasuk berkas perencanaan/MD)
+│   ├── app/                 # Next.js App Router Pages & Styles
+│   │   ├── page.tsx         # Home page featuring trending slider & KinoHarth Banner
+│   │   ├── globals.css      # Global styles, variables, and dark mode configuration
+│   │   └── layout.tsx       # Root layout file
+│   └── components/          # Reusable React components
+│       ├── layout/          # Header, Footer (housing the KinoHarth Badge)
+│       └── ui/              # ComicGrid, SearchBar, SkeletonLoader, etc.
+├── public/                  # Static assets
+│   ├── logo.png             # Official ComiHarth branding logo
+│   ├── logo-kinoharth.png   # Partner KinoHarth branding logo (Large)
+│   ├── banner-watch.png     # Custom Ghibli-themed partner promotion banner
+│   └── logo-favicon.ico     # Favicon configuration
+└── .gitignore               # Ignored files (includes local markdown and planning files)
 ```
 
----
+## Getting Started
 
-## 🚀 Panduan Memulai (Development Setup)
-
-### 1. Kloning Repositori
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/heolazz/comiharth.git
 cd comiharth
 ```
 
-### 2. Instalasi Dependensi
+### 2. Install Dependencies
 ```bash
 npm install
 ```
 
-### 3. Jalankan Server Development
+### 3. Start the Development Server
 ```bash
 npm run dev
 ```
-Setelah berjalan, buka [http://localhost:3000](http://localhost:3000) di browser Anda untuk melihat hasilnya.
+Open [http://localhost:3000](http://localhost:3000) in your web browser to view the application.
 
----
+## Ecosystem Redirection
+- **ComiHarth (Manga Reader):** [comiharth.online](https://comiharth.online)
+- **KinoHarth (Anime Streaming):** [kinoharth.online](https://kinoharth.online)
 
-## 🌐 Ekosistem Sister-Site
-* 📖 **ComiHarth (Manga Reader):** [comiharth.online](https://comiharth.online)
-* 🎬 **KinoHarth (Anime Streaming):** [kinoharth.online](https://kinoharth.online)
-
----
-
-## 📄 Lisensi
-Hak Cipta © 2026 **ComiHarth & KinoHarth Ecosystem**. Seluruh hak dilindungi undang-undang.
+## License
+Copyright © 2026 **ComiHarth & KinoHarth Ecosystem**. All rights reserved.
