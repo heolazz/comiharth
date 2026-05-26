@@ -522,6 +522,8 @@ export default function ReaderPage({
         )}
       </div>
 
+      <div id="reader-bottom-anchor" className="h-4" />
+
       {/* Floating Action Buttons (Top/Bottom) - Only show when overlay is visible */}
       <div className={`fixed bottom-24 right-4 md:right-8 z-40 flex flex-col gap-2 transition-all duration-300 ${isOverlayVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}`}>
         <button
@@ -537,7 +539,7 @@ export default function ReaderPage({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            document.getElementById('reader-bottom-anchor')?.scrollIntoView({ behavior: 'smooth' });
           }}
           className="p-2.5 md:p-3 rounded-full bg-surface/90 backdrop-blur-md border border-border-dark text-foreground hover:bg-surface-hover shadow-lg"
           title="Go to Bottom"
