@@ -31,11 +31,11 @@ export default function Footer() {
             href="https://kinoharth.online"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-[#ff6568] hover:-translate-y-1 transition-all duration-300 flex items-center gap-1.5 bg-[#ff6568]/10 px-3 py-1.5 rounded-full text-[#ff6568] border border-[#ff6568]/20 text-xs"
+            className="hover:text-accent-green hover:-translate-y-1 transition-all duration-300 flex items-center gap-1.5 bg-accent-green/10 px-3 py-1.5 rounded-full text-accent-green border border-accent-green/20 text-xs"
           >
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff6568] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ff6568]"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-green opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             KinoHarth (Watch Anime)
           </a>

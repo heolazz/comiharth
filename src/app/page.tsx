@@ -511,76 +511,75 @@ export default function HomePage() {
 
       {/* 7. Sister Site Promo Banner (KinoHarth) - Ghibli Vibe */}
       <section className="mx-auto w-full max-w-[1400px] px-4 md:px-8 mb-8">
-        <div className="relative overflow-hidden rounded-3xl group shadow-2xl min-h-[300px] md:min-h-[400px] flex items-center border border-white/10">
+        <div className="relative overflow-hidden rounded-3xl group shadow-2xl min-h-[350px] md:min-h-[450px] flex items-center border border-white/10">
           {/* Ghibli Background Image */}
           <div className="absolute inset-0 z-0 bg-zinc-900">
             <img 
               src="/banner-watch.png" 
               alt="Ghibli Vibe Banner" 
-              className="w-full h-full object-cover transition-transform duration-[2000ms] ease-out group-hover:scale-105"
+              className="w-full h-full object-cover object-center md:object-right transition-transform duration-[2000ms] ease-out group-hover:scale-105"
             />
-            {/* Soft Overlay for Readability - matching Ghibli's warmth */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+            {/* Soft Overlay for Readability - stronger on mobile */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/30 md:bg-gradient-to-r md:from-black/95 md:via-black/70 md:to-transparent" />
             
-            {/* Warm magical glow */}
-            <div className="absolute -left-32 top-0 w-[500px] h-[500px] bg-[#ff6568]/15 rounded-full blur-[100px] mix-blend-screen pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#f99c00]/10 rounded-full blur-[80px] mix-blend-screen pointer-events-none" />
+            {/* Green magical glow (ComiHarth accent) */}
+            <div className="absolute -left-32 top-0 w-[500px] h-[500px] bg-accent-green/15 rounded-full blur-[100px] mix-blend-screen pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] mix-blend-screen pointer-events-none" />
           </div>
 
           {/* Content & Branding */}
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 p-8 md:p-14 w-full h-full">
-            <div className="flex flex-col gap-6 text-center md:text-left max-w-2xl w-full">
+          <div className="relative z-10 flex flex-col p-6 sm:p-8 md:p-14 w-full h-full justify-center">
+            <div className="flex flex-col gap-5 md:gap-6 text-center md:text-left max-w-xl w-full mx-auto md:mx-0">
               
               {/* Giant Logo */}
               <div className="flex flex-col gap-2 items-center md:items-start">
                 <img 
                   src="/logo-kinoharth.png" 
                   alt="KinoHarth Logo" 
-                  className="h-16 md:h-24 lg:h-28 w-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-105" 
+                  className="h-14 sm:h-16 md:h-20 lg:h-24 w-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-105" 
                 />
               </div>
               
-              <div className="flex flex-col gap-3">
-                <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-xl">
+              <div className="flex flex-col gap-2 md:gap-3">
+                <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-xl">
                   Lanjutkan Petualangan <br className="hidden md:inline" />
                   ke Dunia Animasi!
                 </h2>
                 
-                <p className="text-xs md:text-sm text-zinc-200 font-medium leading-relaxed max-w-xl drop-shadow-md">
+                <p className="text-[11px] sm:text-xs md:text-sm text-zinc-200 font-medium leading-relaxed max-w-md mx-auto md:mx-0 drop-shadow-md">
                   Selesai membaca? Mari nikmati ribuan mahakarya anime dengan kualitas HD yang memanjakan mata, terjemahan bahasa Inggris yang akurat, dan tanpa gangguan iklan.
                 </p>
               </div>
               
-              <div className="text-[9px] md:text-[10px] text-white font-bold tracking-wider uppercase flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2">
-                <span className="bg-black/40 backdrop-blur-md border border-white/20 px-3.5 py-1.5 rounded-xl shadow-lg">Streaming HD</span>
-                <span className="bg-black/40 backdrop-blur-md border border-[#ff6568]/50 text-[#ffb96d] px-3.5 py-1.5 rounded-xl shadow-[0_0_15px_rgba(255,101,104,0.3)]">English Sub</span>
-                <span className="bg-black/40 backdrop-blur-md border border-white/20 px-3.5 py-1.5 rounded-xl shadow-lg">Zero Ads</span>
+              <div className="text-[9px] md:text-[10px] text-white font-bold tracking-wider uppercase flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3 mt-1 md:mt-2">
+                <span className="bg-black/50 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-xl shadow-lg">Streaming HD</span>
+                <span className="bg-black/50 backdrop-blur-md border border-accent-green/50 text-accent-green px-3 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,200,83,0.2)]">English Sub</span>
+                <span className="bg-black/50 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-xl shadow-lg">Zero Ads</span>
               </div>
-            </div>
 
-            {/* Right Side: CTA Button */}
-            <div className="flex flex-col items-center gap-4 shrink-0 pt-6 md:pt-0">
-              <a
-                href="https://kinoharth.online"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group/btn relative flex items-center justify-center gap-3 h-14 md:h-16 px-8 md:px-10 rounded-full overflow-hidden shadow-[0_0_40px_rgba(255,101,104,0.4)] hover:shadow-[0_0_60px_rgba(255,101,104,0.6)] transition-all duration-300 hover:scale-105"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#fb2c36] to-[#f99c00] opacity-90 group-hover/btn:opacity-100 transition-opacity duration-300" />
-                <div className="absolute inset-0 bg-black/10 group-hover/btn:bg-transparent transition-colors duration-300" />
-                <Play className="h-5 w-5 md:h-6 md:w-6 fill-white text-white relative z-10" />
-                <span className="text-sm md:text-base font-extrabold text-white relative z-10 tracking-wide uppercase">Mulai Menonton</span>
-              </a>
-              
-              <a
-                href="https://kinoharth.online"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs font-bold text-zinc-300/80 hover:text-white drop-shadow-md transition-colors"
-              >
-                Kunjungi kinoharth.online
-              </a>
+              {/* CTA Button placed below text aligned left on desktop, center on mobile */}
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-4 md:pt-2">
+                <a
+                  href="https://kinoharth.online"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/btn relative flex items-center justify-center gap-2 h-12 sm:h-14 px-6 sm:px-8 rounded-full overflow-hidden shadow-[0_0_30px_rgba(0,200,83,0.3)] hover:shadow-[0_0_50px_rgba(0,200,83,0.5)] transition-all duration-300 hover:scale-105 w-full sm:w-auto"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-accent-green to-emerald-600 opacity-90 group-hover/btn:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-black/10 group-hover/btn:bg-transparent transition-colors duration-300" />
+                  <Play className="h-4 w-4 sm:h-5 sm:w-5 fill-white text-white relative z-10" />
+                  <span className="text-xs sm:text-sm font-extrabold text-white relative z-10 tracking-wide uppercase">Mulai Menonton</span>
+                </a>
+                
+                <a
+                  href="https://kinoharth.online"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] sm:text-xs font-bold text-zinc-300/80 hover:text-white drop-shadow-md transition-colors"
+                >
+                  Kunjungi kinoharth.online
+                </a>
+              </div>
             </div>
           </div>
         </div>
