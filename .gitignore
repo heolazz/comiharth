@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Documentation and planning
+*.md
+!README.md
+!Readme.md
+!readme.md
+planning/
+*planning*

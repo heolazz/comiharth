@@ -512,12 +512,14 @@ export default function ReaderPage({
         />
 
         {/* Dynamic Comments Section */}
-        <div className="px-4 md:px-8">
-          <ChapterComments 
-            chapterId={chapterId} 
-            theme={preferences.theme} 
-          />
-        </div>
+        {provider === "shinigami" && (
+          <div className="px-4 md:px-8">
+            <ChapterComments 
+              chapterId={chapterId} 
+              theme={preferences.theme} 
+            />
+          </div>
+        )}
       </div>
 
       {/* Floating Action Buttons (Top/Bottom) - Only show when overlay is visible */}

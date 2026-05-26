@@ -8,11 +8,18 @@ export async function GET(
     const { chapterId } = await params;
     const { searchParams } = request.nextUrl;
     
+    // Extract the real chapter ID if it contains a provider delimiter (e.g. comicId~realChapterId)
+    const realChapterId = chapterId.includes("~") 
+      ? chapterId.split("~")[1] 
+      : chapterId.includes("-chapter-") 
+        ? chapterId.split("-chapter-")[1] 
+        : chapterId;
+
     const page = searchParams.get("page") || "1";
     const pageSize = searchParams.get("pageSize") || "10";
     const sortBy = searchParams.get("sortBy") || "like_desc";
 
-    const targetUrl = `https://commento.shngm.io/api/comment?path=chapter%2F${encodeURIComponent(chapterId)}&pageSize=${pageSize}&page=${page}&lang=en&sortBy=${sortBy}`;
+    const targetUrl = `https://commento.shngm.io/api/comment?path=chapter%2F${encodeURIComponent(realChapterId)}&pageSize=${pageSize}&page=${page}&lang=en&sortBy=${sortBy}`;
     
     console.log(`Proxying comment request to: ${targetUrl}`);
     
