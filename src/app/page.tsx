@@ -512,6 +512,63 @@ export default function HomePage() {
         )}
       </section>
 
+      {/* 7. Sister Site Promo Banner (KinoHarth) */}
+      <section className="mx-auto w-full max-w-[1400px] px-4 md:px-8">
+        <div className="relative overflow-hidden rounded-3xl border border-[#ff6568]/20 bg-gradient-to-br from-[#460809]/40 via-zinc-950 to-black p-8 md:p-12 shadow-2xl shadow-red-950/20 flex flex-col md:flex-row items-center justify-between gap-8 group">
+          {/* Glowing background decorations */}
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#ff6568]/8 rounded-full blur-3xl pointer-events-none group-hover:bg-[#ff6568]/12 transition-all duration-700" />
+          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#f99c00]/5 rounded-full blur-3xl pointer-events-none" />
+
+          {/* Left Side: Content & Branding */}
+          <div className="flex flex-col gap-4 text-center md:text-left z-10 max-w-xl">
+            <div className="inline-flex self-center md:self-start items-center gap-1.5 px-3 py-1 rounded-full border border-[#ff6568]/30 bg-[#ff6568]/10 text-[10px] font-extrabold tracking-wider text-[#ff6568] uppercase backdrop-blur-md animate-pulse">
+              <Zap className="h-3 w-3 fill-current animate-bounce text-[#ff6568]" /> Sister Platform
+            </div>
+            
+            <div className="flex flex-col gap-3 items-center md:items-start">
+              <img src="/logo-kinoharth.png" alt="KinoHarth Logo" className="h-10 md:h-12 w-auto object-contain transition-transform duration-500 group-hover:scale-105" />
+              <h2 className="font-display text-xl md:text-3xl font-extrabold tracking-tight text-white leading-tight mt-1">
+                Selesai Membaca? <br className="hidden md:inline" />
+                Saatnya Streaming Anime Favoritmu!
+              </h2>
+            </div>
+            
+            <p className="text-xs md:text-sm text-zinc-400 font-medium leading-relaxed">
+              Lanjutkan keseruan dari lembaran komik langsung ke layar animasi! Nikmati ribuan judul anime terbaru secara gratis dengan kualitas super jernih, pemutaran instan tanpa buffering, dan sepenuhnya bebas iklan.
+            </p>
+            
+            <div className="text-[9px] md:text-[10px] text-zinc-400 font-bold tracking-wider uppercase flex flex-wrap items-center justify-center md:justify-start gap-2 mt-1">
+              <span className="bg-zinc-900/80 border border-zinc-800 px-2.5 py-1 rounded-lg">Streaming HD</span>
+              <span className="bg-zinc-900/80 border border-[#ff6568]/20 text-[#ff6568] px-2.5 py-1 rounded-lg">English Sub</span>
+              <span className="bg-zinc-900/80 border border-zinc-800 px-2.5 py-1 rounded-lg">Zero Ads</span>
+              <span className="bg-zinc-900/80 border border-zinc-800 px-2.5 py-1 rounded-lg">Fast Loading</span>
+            </div>
+          </div>
+
+          {/* Right Side: CTA Button and Visual Preview */}
+          <div className="flex flex-col sm:flex-row items-center gap-6 z-10 shrink-0">
+            <a
+              href="https://kinoharth.online"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 h-12 px-8 rounded-2xl bg-gradient-to-r from-[#fb2c36] to-[#f99c00] hover:from-[#ff6568] hover:to-[#ffb96d] text-sm font-bold text-white transition-all shadow-lg shadow-[#fb2c36]/20 hover:shadow-[#fb2c36]/35 hover:scale-[1.02] cursor-pointer"
+            >
+              <Play className="h-4 w-4 fill-current" />
+              <span>Mulai Streaming</span>
+            </a>
+            
+            <a
+              href="https://kinoharth.online"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-bold text-zinc-400 hover:text-white transition-colors"
+            >
+              Kunjungi kinoharth.online
+            </a>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }
