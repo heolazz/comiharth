@@ -120,61 +120,33 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
   // Theme styling helpers
   const getContainerBg = () => {
     switch (theme) {
-      case "black":
-        return "bg-[#0b0c0e] border-[#16181d] text-zinc-300";
-      case "gray":
-        return "bg-zinc-900 border-zinc-800 text-zinc-100";
-      case "white":
-      default:
-        return "bg-slate-50 border-slate-200 text-slate-800";
-    }
-  };
-
-  const getCardBg = () => {
-    switch (theme) {
-      case "black":
-        return "bg-[#111317]/60 border-[#1a1d24]/60";
-      case "gray":
-        return "bg-zinc-800/50 border-zinc-700/40";
-      case "white":
-      default:
-        return "bg-white border-slate-100";
+      case "black": return "bg-transparent text-zinc-300";
+      case "gray": return "bg-transparent text-zinc-100";
+      case "white": default: return "bg-transparent text-slate-800";
     }
   };
 
   const getMutedText = () => {
     switch (theme) {
-      case "black":
-        return "text-zinc-500";
-      case "gray":
-        return "text-zinc-400";
-      case "white":
-      default:
-        return "text-slate-500";
+      case "black": return "text-zinc-500";
+      case "gray": return "text-zinc-400";
+      case "white": default: return "text-slate-500";
     }
   };
 
   const getBorderColor = () => {
     switch (theme) {
-      case "black":
-        return "border-[#1c1f27]";
-      case "gray":
-        return "border-zinc-700/60";
-      case "white":
-      default:
-        return "border-slate-100";
+      case "black": return "border-[#1c1f27]";
+      case "gray": return "border-zinc-800/80";
+      case "white": default: return "border-slate-200";
     }
   };
 
   const getBodyTextColor = () => {
     switch (theme) {
-      case "black":
-        return "text-zinc-200";
-      case "gray":
-        return "text-zinc-100";
-      case "white":
-      default:
-        return "text-slate-800";
+      case "black": return "text-zinc-300";
+      case "gray": return "text-zinc-200";
+      case "white": default: return "text-slate-700";
     }
   };
 
@@ -183,13 +155,12 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
     const initials = nick ? nick.trim().charAt(0).toUpperCase() : "?";
     
     return (
-      <div className="relative h-10 w-10 shrink-0">
+      <div className="relative h-9 w-9 md:h-10 md:w-10 shrink-0">
         <img
           src={avatarUrl || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"}
           alt={nick}
-          className="h-full w-full rounded-full object-cover border border-border-dark/10"
+          className="h-full w-full rounded-full object-cover border border-border-dark/5"
           onError={(e) => {
-            // Hide the broken image and show placeholder
             e.currentTarget.style.display = "none";
             const placeholder = e.currentTarget.nextElementSibling as HTMLDivElement;
             if (placeholder) placeholder.style.display = "flex";
@@ -210,14 +181,14 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
     const hasReplies = item.children && item.children.length > 0;
 
     return (
-      <div className={`flex flex-col gap-3 p-4 md:p-5 rounded-2xl border transition-all ${getCardBg()}`}>
+      <div className="flex flex-col gap-2.5 transition-all">
         {/* Commenter info header */}
         <div className="flex items-center gap-3">
           {renderAvatar(item.nick, item.avatar)}
           
-          <div className="flex flex-col">
+          <div className="flex flex-col justify-center">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-extrabold text-foreground">{item.nick}</span>
+              <span className="text-sm font-bold text-foreground">{item.nick}</span>
               {item.level > 0 && (
                 <span className="text-[9px] font-black uppercase tracking-wider bg-accent-green/10 text-accent-green border border-accent-green/20 px-1 rounded">
                   Lv. {item.level}
@@ -230,12 +201,11 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
               )}
             </div>
             
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-text font-bold mt-0.5">
-              <Clock className="h-3 w-3" />
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-text font-medium mt-0.5">
               <span>{formatCommentTime(item.time)}</span>
               {item.reply_user && (
-                <span className={`${getMutedText()} ml-1 font-semibold`}>
-                  replied to <span className="text-accent-green font-bold">@{item.reply_user.nick}</span>
+                <span className={`${getMutedText()} ml-0.5`}>
+                  · replied to <span className="text-foreground font-semibold">@{item.reply_user.nick}</span>
                 </span>
               )}
             </div>
@@ -244,21 +214,21 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
 
         {/* Comment Content body */}
         <div 
-          className={`text-sm ${getBodyTextColor()} font-medium pl-0 md:pl-[52px] leading-relaxed break-words prose prose-sm dark:prose-invert max-w-none`}
+          className={`text-[14px] ${getBodyTextColor()} font-medium pl-0 md:pl-[52px] leading-relaxed break-words prose prose-sm dark:prose-invert max-w-none`}
           dangerouslySetInnerHTML={{ __html: item.comment }}
         />
 
         {/* Action toolbar */}
-        <div className="flex items-center gap-4 pl-0 md:pl-[52px] mt-1 text-[11px] font-extrabold">
-          <div className={`flex items-center gap-1.5 ${item.like > 0 ? "text-accent-green" : getMutedText()}`}>
-            <ThumbsUp className="h-3.5 w-3.5 cursor-pointer hover:scale-110 active:scale-90 transition-transform" />
-            <span>{item.like}</span>
+        <div className="flex items-center gap-4 pl-0 md:pl-[52px] mt-0.5 text-[12px] font-bold">
+          <div className={`flex items-center gap-1.5 cursor-pointer hover:text-accent-green transition-colors ${item.like > 0 ? "text-accent-green" : getMutedText()}`}>
+            <ThumbsUp className="h-3.5 w-3.5 active:scale-90 transition-transform" />
+            <span>{item.like > 0 ? item.like : ""}</span>
           </div>
         </div>
 
         {/* Render child replies */}
         {hasReplies && (
-          <div className={`flex flex-col gap-4 mt-3 pl-4 md:pl-[52px] border-l-2 border-accent-green/15`}>
+          <div className={`flex flex-col gap-5 mt-4 pl-4 md:pl-[52px] border-l-[2px] ${theme === 'white' ? 'border-slate-100' : 'border-zinc-800/80'}`}>
             {item.children!.map((reply) => (
               <CommentCard key={reply.objectId} item={reply} isChild={true} />
             ))}
@@ -269,21 +239,21 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
   };
 
   return (
-    <div className={`w-full max-w-[900px] mx-auto rounded-3xl border p-6 md:p-8 flex flex-col gap-6 ${getContainerBg()}`}>
+    <div className={`w-full max-w-[800px] mx-auto flex flex-col gap-8 py-8 ${getContainerBg()}`}>
       
       {/* Header */}
-      <div className="flex items-center justify-between border-b pb-4 border-border-dark/15">
+      <div className={`flex items-center justify-between pb-3 border-b ${getBorderColor()}`}>
         <h3 className="text-lg md:text-xl font-display font-extrabold flex items-center gap-2 text-foreground">
-          <MessageSquare className="h-5.5 w-5.5 text-accent-green" />
-          <span>Comments ({totalCount})</span>
+          <span>Comments</span>
+          <span className="text-muted-text text-sm md:text-base font-bold bg-surface px-2.5 py-0.5 rounded-full">{totalCount}</span>
         </h3>
         
         <button
           onClick={() => fetchComments(1, false)}
-          className={`p-2 rounded-xl border flex items-center justify-center transition-all cursor-pointer ${
+          className={`p-2 rounded-full flex items-center justify-center transition-all cursor-pointer ${
             theme === "white"
-              ? "bg-white border-slate-200 hover:bg-slate-100 text-slate-600"
-              : "bg-surface border-border-dark/60 hover:bg-surface-hover text-muted-text hover:text-accent-green"
+              ? "hover:bg-slate-100 text-slate-500"
+              : "hover:bg-surface-hover text-muted-text hover:text-accent-green"
           }`}
           title="Refresh Comments"
         >
@@ -293,12 +263,12 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
 
       {/* Main Comment area */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-3">
-          <RefreshCw className="h-8 w-8 text-accent-green animate-spin" />
-          <p className="text-xs text-muted-text font-bold">Summoning comments thread...</p>
+        <div className="flex flex-col items-center justify-center py-12 gap-3">
+          <RefreshCw className="h-6 w-6 text-accent-green animate-spin" />
+          <p className="text-xs text-muted-text font-medium">Loading comments...</p>
         </div>
       ) : error ? (
-        <div className="text-center py-12 flex flex-col items-center gap-3">
+        <div className="text-center py-10 flex flex-col items-center gap-3">
           <div className="text-red-500 bg-red-500/5 px-4 py-2 rounded-xl border border-red-500/10 text-xs font-bold">
             {error}
           </div>
@@ -310,19 +280,21 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
           </button>
         </div>
       ) : comments.length === 0 ? (
-        <div className="text-center py-16 flex flex-col items-center justify-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-accent-green/5 flex items-center justify-center">
-            <MessageSquare className="h-6 w-6 text-accent-green" />
+        <div className="text-center py-12 flex flex-col items-center justify-center gap-3">
+          <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'white' ? 'bg-slate-50' : 'bg-surface'}`}>
+            <MessageSquare className={`h-5 w-5 ${getMutedText()}`} />
           </div>
           <h4 className="text-sm font-bold text-foreground">No comments yet</h4>
-          <p className="text-xs text-muted-text max-w-xs leading-relaxed font-semibold">
+          <p className="text-xs text-muted-text max-w-xs leading-relaxed font-medium">
             Be the first to share your thoughts on this chapter!
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-5">
-          {comments.map((item) => (
-            <CommentCard key={item.objectId} item={item} />
+        <div className="flex flex-col">
+          {comments.map((item, index) => (
+            <div key={item.objectId} className={`${index !== 0 ? `pt-6 mt-6 border-t ${getBorderColor()}` : ''}`}>
+              <CommentCard item={item} />
+            </div>
           ))}
 
           {/* Load More Button */}
@@ -330,21 +302,21 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
             <button
               disabled={isLoadingMore}
               onClick={handleLoadMore}
-              className={`w-full mt-4 h-12 rounded-2xl border text-xs font-bold cursor-pointer transition-all flex items-center justify-center gap-2 ${
+              className={`w-full mt-8 h-11 rounded-full border text-xs font-bold cursor-pointer transition-all flex items-center justify-center gap-2 ${
                 theme === "white"
-                  ? "bg-white border-slate-200 hover:bg-slate-100 text-slate-700 active:bg-slate-50"
-                  : "bg-surface border-border-dark/60 hover:bg-surface-hover text-foreground hover:text-accent-green active:bg-surface"
+                  ? "bg-white border-slate-200 hover:bg-slate-50 text-slate-700"
+                  : "bg-surface border-border-dark/60 hover:bg-surface-hover text-foreground hover:text-accent-green"
               }`}
             >
               {isLoadingMore ? (
                 <>
                   <RefreshCw className="h-4 w-4 animate-spin text-accent-green" />
-                  <span>Loading more thoughts...</span>
+                  <span>Loading...</span>
                 </>
               ) : (
                 <>
                   <ChevronDown className="h-4 w-4" />
-                  <span>Load More Comments</span>
+                  <span>Show More Comments</span>
                 </>
               )}
             </button>
