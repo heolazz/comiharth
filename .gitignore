@@ -47,3 +47,10 @@ next-env.d.ts
 !readme.md
 planning/
 *planning*
+
+# Explicit ignores for agent, Claude, and planning docs
+AGENTS.md
+CLAUDE.md
+planning.md
+mangafire_manga_reader_planning.md
+shinigami_manga_reader_planning.md
