@@ -63,7 +63,7 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) in your web browser to view the application.
 
 ## Ecosystem Redirection
-- **ComiHarth (Manga Reader):** [comiharth.online](https://comiharth.online)
+- **ComiHarth (Manga Reader):** [comic.kinoharth.online](https://comic.kinoharth.online)
 - **KinoHarth (Anime Streaming):** [kinoharth.online](https://kinoharth.online)
 
 ## License
