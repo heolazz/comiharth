@@ -8,10 +8,14 @@ export async function GET(
     const { chapterId } = await params;
     const { searchParams } = request.nextUrl;
     
-    // Extract the real chapter ID if it contains a provider delimiter (e.g. comicId~realChapterId)
-    const realChapterId = chapterId.includes("~") 
+    const type = searchParams.get("type") || "chapter"; // "chapter" or "series"
+    const prefix = type === "series" ? "series%2F" : "chapter%2F";
+    
+    // Extract the real ID if it contains a provider delimiter (e.g. comicId~realChapterId)
+    // Only apply this parsing for chapters, series ID is usually pristine
+    const realId = (type === "chapter" && chapterId.includes("~"))
       ? chapterId.split("~")[1] 
-      : chapterId.includes("-chapter-") 
+      : (type === "chapter" && chapterId.includes("-chapter-"))
         ? chapterId.split("-chapter-")[1] 
         : chapterId;
 
@@ -19,7 +23,7 @@ export async function GET(
     const pageSize = searchParams.get("pageSize") || "10";
     const sortBy = searchParams.get("sortBy") || "like_desc";
 
-    const targetUrl = `https://commento.shngm.io/api/comment?path=chapter%2F${encodeURIComponent(realChapterId)}&pageSize=${pageSize}&page=${page}&lang=en&sortBy=${sortBy}`;
+    const targetUrl = `https://commento.shngm.io/api/comment?path=${prefix}${encodeURIComponent(realId)}&pageSize=${pageSize}&page=${page}&lang=en&sortBy=${sortBy}`;
     
     console.log(`Proxying comment request to: ${targetUrl}`);
     

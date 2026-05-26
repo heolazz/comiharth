@@ -6,7 +6,7 @@ import { ChapterPages, Chapter, ComicDetail } from "@/lib/providers/types";
 import ReaderToolbar from "@/components/reader/ReaderToolbar";
 import ReaderSettings, { ReaderPreferences } from "@/components/reader/ReaderSettings";
 import ChapterNavigation from "@/components/reader/ChapterNavigation";
-import ChapterComments from "@/components/reader/ChapterComments";
+import Comments from "@/components/reader/ChapterComments";
 import { Loader2, ArrowLeft, ArrowRight, RefreshCw, Play, Pause, SkipBack, SkipForward, Plus, Minus, Maximize, Minimize, ChevronUp, ChevronDown } from "lucide-react";
 
 export default function ReaderPage({
@@ -514,8 +514,9 @@ export default function ReaderPage({
         {/* Dynamic Comments Section */}
         {provider === "shinigami" && (
           <div className="px-4 md:px-8">
-            <ChapterComments 
-              chapterId={chapterId} 
+            <Comments 
+              id={chapterId} 
+              type="chapter"
               theme={preferences.theme} 
             />
           </div>

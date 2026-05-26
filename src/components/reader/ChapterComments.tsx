@@ -30,9 +30,10 @@ type CommentItem = {
   reply_user?: ReplyUser;
 };
 
-type ChapterCommentsProps = {
-  chapterId: string;
-  theme: "white" | "gray" | "black";
+type CommentsProps = {
+  id: string;
+  type?: "chapter" | "series";
+  theme?: "white" | "gray" | "black";
 };
 
 function formatCommentTime(timestamp: number) {
@@ -56,7 +57,7 @@ function formatCommentTime(timestamp: number) {
   }
 }
 
-export default function ChapterComments({ chapterId, theme }: ChapterCommentsProps) {
+export default function Comments({ id, type = "chapter", theme = "white" }: CommentsProps) {
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -74,7 +75,7 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
     setError("");
 
     try {
-      const res = await fetch(`/api/comments/${chapterId}?page=${pageNum}&pageSize=10`);
+      const res = await fetch(`/api/comments/${id}?type=${type}&page=${pageNum}&pageSize=10`);
       if (!res.ok) throw new Error("Failed to load comments from stream");
       const json = await res.json();
 
@@ -107,7 +108,7 @@ export default function ChapterComments({ chapterId, theme }: ChapterCommentsPro
   useEffect(() => {
     setPage(1);
     fetchComments(1, false);
-  }, [chapterId]);
+  }, [id, type]);
 
   const handleLoadMore = () => {
     if (page < totalPages && !isLoadingMore) {

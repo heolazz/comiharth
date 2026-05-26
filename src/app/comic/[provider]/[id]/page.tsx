@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import Link from "next/link";
 import { ComicDetail, Chapter } from "@/lib/providers/types";
 import ChapterList from "@/components/comic/ChapterList";
+import Comments from "@/components/reader/ChapterComments";
 import { Play, Heart, Star, BookOpen, User, Loader2 } from "lucide-react";
 
 type FavoriteItem = {
@@ -305,6 +306,17 @@ export default function ComicDetailPage({
         <section className="mt-6 pt-10 border-t border-border-dark/20">
           <ChapterList chapters={chapters} provider={provider} />
         </section>
+
+        {/* Dynamic Reviews/Comments Section */}
+        {provider === "shinigami" && (
+          <section className="mt-4 pt-10 border-t border-border-dark/20">
+            <Comments 
+              id={id} 
+              type="series"
+              theme="black" 
+            />
+          </section>
+        )}
 
       </div>
     </div>
