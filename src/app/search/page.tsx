@@ -10,7 +10,7 @@ function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get("q") || "";
-  const providerParam = searchParams.get("provider") || "shinigami";
+  const providerParam = searchParams.get("provider") || searchParams.get("source");
   const pageParam = parseInt(searchParams.get("page") || "1", 10);
   const formatParam = searchParams.get("format") || "all";
   const genreParam = searchParams.get("genre") || "all";
@@ -18,7 +18,12 @@ function SearchContent() {
   const sortParam = searchParams.get("sort") || "latest";
 
   const [inputVal, setInputVal] = useState(query);
-  const [activeProvider, setActiveProvider] = useState(providerParam);
+  const [activeProvider, setActiveProvider] = useState(() => {
+    if (typeof window !== "undefined") {
+      return providerParam || localStorage.getItem("comic-source") || "shinigami";
+    }
+    return providerParam || "shinigami";
+  });
   const [currentPage, setCurrentPage] = useState(pageParam);
   const [selectedType, setSelectedType] = useState<string>(formatParam);
   const [selectedGenre, setSelectedGenre] = useState<string>(genreParam);
@@ -31,10 +36,34 @@ function SearchContent() {
 
   // Filter & Sort States
   const [showFilters, setShowFilters] = useState(false);
+  const [komikcastGenres, setKomikcastGenres] = useState<{id: string, name: string}[]>([]);
+
+  useEffect(() => {
+    if (activeProvider === "komikcast" && komikcastGenres.length === 0) {
+      fetch("/api/search?action=genres&provider=komikcast")
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.data && Array.isArray(json.data)) {
+            const genres = json.data
+              .filter((g: any) => g && g.id && g.data && g.data.name)
+              .map((g: any) => ({
+                id: g.id.toString(),
+                name: g.data.name,
+              }))
+              .sort((a: any, b: any) => a.name.localeCompare(b.name));
+            console.log("Successfully mapped genres:", genres.length);
+            setKomikcastGenres(genres);
+          } else {
+            console.error("Invalid response format:", json);
+          }
+        })
+        .catch((err) => console.error("Failed to fetch komikcast genres catch:", err));
+    }
+  }, [activeProvider, komikcastGenres.length]);
 
   // Sync states when URL parameters change
   useEffect(() => {
-    setActiveProvider(providerParam);
+    if (providerParam) setActiveProvider(providerParam);
     setCurrentPage(pageParam);
     setSelectedType(formatParam);
     setSelectedGenre(genreParam);
@@ -49,7 +78,7 @@ function SearchContent() {
       setIsLoading(true);
       setError("");
       try {
-        const searchVal = query.trim() || "a";
+        const searchVal = query.trim();
         const res = await fetch(
           `/api/search?q=${encodeURIComponent(searchVal)}&provider=${activeProvider}&page=${currentPage}&format=${selectedType}&genre=${selectedGenre}&status=${selectedStatus}&sort=${sortBy}`
         );
@@ -151,9 +180,9 @@ function SearchContent() {
             placeholder={`Search comics, manhwa, manga on ${
               activeProvider === "shinigami" 
                 ? "Shinigami" 
-                : activeProvider === "mangadex" 
-                ? "MangaDex" 
-                : "MangaFire"
+                : activeProvider === "komikcast" 
+                ? "Komikcast" 
+                : activeProvider
             }...`}
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
@@ -298,23 +327,52 @@ function SearchContent() {
                   Genres
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {[
-                    "all", "action", "adventure", "comedy", "drama", 
-                    "fantasy", "romance", "sci-fi", "isekai", "slice-of-life", "thriller"
-                  ].map((g) => (
-                    <button
-                      key={g}
-                      onClick={() => handleGenreChange(g)}
-                      className={`h-9 px-3 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer flex items-center gap-1.5 ${
-                        selectedGenre === g
-                          ? "bg-accent-green text-white"
-                          : "bg-background/80 border border-border-dark/60 text-muted-text hover:bg-surface-hover hover:text-foreground hover:border-border-dark"
-                      }`}
-                    >
-                      {selectedGenre === g && <Check className="h-3 w-3" />}
-                      {g.replace("-", " ")}
-                    </button>
-                  ))}
+                  <button
+                    onClick={() => handleGenreChange("all")}
+                    className={`h-9 px-3 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer flex items-center gap-1.5 ${
+                      selectedGenre === "all"
+                        ? "bg-accent-green text-white"
+                        : "bg-background/80 border border-border-dark/60 text-muted-text hover:bg-surface-hover hover:text-foreground hover:border-border-dark"
+                    }`}
+                  >
+                    {selectedGenre === "all" && <Check className="h-3 w-3" />}
+                    All
+                  </button>
+
+                  {activeProvider === "komikcast" ? (
+                    komikcastGenres.map((g) => (
+                      <button
+                        key={g.id}
+                        onClick={() => handleGenreChange(g.name)}
+                        className={`h-9 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                          selectedGenre === g.name
+                            ? "bg-accent-green text-white"
+                            : "bg-background/80 border border-border-dark/60 text-muted-text hover:bg-surface-hover hover:text-foreground hover:border-border-dark"
+                        }`}
+                      >
+                        {selectedGenre === g.name && <Check className="h-3 w-3" />}
+                        {g.name}
+                      </button>
+                    ))
+                  ) : (
+                    [
+                      "action", "adventure", "comedy", "drama", 
+                      "fantasy", "romance", "sci-fi", "isekai", "slice-of-life", "thriller"
+                    ].map((g) => (
+                      <button
+                        key={g}
+                        onClick={() => handleGenreChange(g)}
+                        className={`h-9 px-3 rounded-xl text-xs font-bold capitalize transition-all cursor-pointer flex items-center gap-1.5 ${
+                          selectedGenre === g
+                            ? "bg-accent-green text-white"
+                            : "bg-background/80 border border-border-dark/60 text-muted-text hover:bg-surface-hover hover:text-foreground hover:border-border-dark"
+                        }`}
+                      >
+                        {selectedGenre === g && <Check className="h-3 w-3" />}
+                        {g.replace("-", " ")}
+                      </button>
+                    ))
+                  )}
                 </div>
               </div>
             </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ComicSearchResult } from "@/lib/providers/types";
 import ComicGrid from "@/components/comic/ComicGrid";
 import ComicSlider from "@/components/comic/ComicSlider";
@@ -19,8 +19,17 @@ type ReadingHistoryItem = {
   lastReadAt: string;
 };
 
-export default function HomePage() {
+function HomePageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const querySource = searchParams.get("source");
+  
+  const [currentSource, setCurrentSource] = useState(() => {
+    if (typeof window !== "undefined") {
+      return querySource || localStorage.getItem("comic-source") || "shinigami";
+    }
+    return querySource || "shinigami";
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [history, setHistory] = useState<ReadingHistoryItem[]>([]);
   const [trendingComics, setTrendingComics] = useState<any[]>([]);
@@ -50,14 +59,25 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const savedSource = localStorage.getItem("comic-source") || "shinigami";
+    const sourceToUse = querySource || savedSource;
+    setCurrentSource(sourceToUse);
+    if (querySource && querySource !== savedSource) {
+      localStorage.setItem("comic-source", querySource);
+    }
+  }, [querySource]);
+
+  useEffect(() => {
+    let ignore = false;
+
     // Fetch all home feeds
     const fetchFeeds = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch("/api/home-feed");
+        const res = await fetch(`/api/home-feed?source=${currentSource}`);
         if (res.ok) {
           const json = await res.json();
-          if (json && json.success) {
+          if (json && json.success && !ignore) {
             setRecommendedComics({
               manhwa: json.data.recommended?.manhwa || [],
               manga: json.data.recommended?.manga || [],
@@ -78,7 +98,7 @@ export default function HomePage() {
       } catch (err) {
         console.error("Failed to load home feeds:", err);
       } finally {
-        setIsLoading(false);
+        if (!ignore) setIsLoading(false);
       }
     };
 
@@ -87,11 +107,14 @@ export default function HomePage() {
     // Fetch trending comics for hero slider
     const fetchTrending = async () => {
       try {
-        const res = await fetch("/api/trending");
+        const res = await fetch(`/api/trending?source=${currentSource}`);
         if (res.ok) {
           const json = await res.json();
-          if (json && json.success && json.data.length > 0) {
+          if (json && json.success && json.data.length > 0 && !ignore) {
             setTrendingComics(json.data);
+            setCurrentSlide(0);
+          } else if (!ignore) {
+            setTrendingComics([]);
           }
         }
       } catch (err) {
@@ -103,7 +126,7 @@ export default function HomePage() {
 
     // Load reading history from localStorage
     const savedHistory = localStorage.getItem("comiharth-history");
-    if (savedHistory) {
+    if (savedHistory && !ignore) {
       try {
         const parsed = JSON.parse(savedHistory) as ReadingHistoryItem[];
         const sorted = parsed.sort(
@@ -114,7 +137,11 @@ export default function HomePage() {
         console.error("Failed to parse history:", err);
       }
     }
-  }, []);
+
+    return () => {
+      ignore = true;
+    };
+  }, [currentSource]);
 
   // Auto slide interval
   useEffect(() => {
@@ -214,14 +241,14 @@ export default function HomePage() {
 
                     <div className="flex flex-wrap gap-2 md:gap-3 items-center mt-1 md:mt-4 justify-start">
                       <Link
-                        href={trendingComics[currentSlide].latest_chapter_id ? `/read/shinigami/${trendingComics[currentSlide].manga_id}~${trendingComics[currentSlide].latest_chapter_id}` : `/comic/shinigami/${trendingComics[currentSlide].manga_id}`}
+                        href={trendingComics[currentSlide].latest_chapter_id ? `/read/${currentSource}/${trendingComics[currentSlide].manga_id}~${trendingComics[currentSlide].latest_chapter_id}` : `/comic/${currentSource}/${trendingComics[currentSlide].manga_id}`}
                         className="flex items-center gap-1.5 md:gap-2 h-8 px-4 md:h-12 md:px-8 rounded-lg md:rounded-xl bg-accent-green hover:bg-green-600 text-xs md:text-sm font-bold text-white transition-all shadow-lg shadow-green-500/20 cursor-pointer"
                       >
                         <Play className="h-3 w-3 md:h-4 md:w-4 fill-current" />
                         <span>Read</span>
                       </Link>
                       <Link
-                        href={`/comic/shinigami/${trendingComics[currentSlide].manga_id}`}
+                        href={`/comic/${currentSource}/${trendingComics[currentSlide].manga_id}`}
                         className="flex items-center gap-1.5 md:gap-2 h-8 px-3 md:h-12 md:px-6 rounded-lg md:rounded-xl bg-surface/30 backdrop-blur-md hover:bg-surface/60 border border-border-dark text-xs md:text-sm font-bold text-foreground transition-colors cursor-pointer"
                       >
                         <Info className="h-3 w-3 md:h-4 md:w-4 text-accent-green" />
@@ -586,5 +613,18 @@ export default function HomePage() {
       </section>
 
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <div className="h-8 w-8 border-2 border-accent-green border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs text-muted-text font-semibold">Loading...</p>
+      </div>
+    }>
+      <HomePageContent />
+    </Suspense>
   );
 }

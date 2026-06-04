@@ -2,11 +2,13 @@ import { MangaProvider } from "./types";
 import { mangafireProvider } from "./mangafire";
 import { mangadexProvider } from "./mangadex";
 import { shinigamiProvider } from "./shinigami";
+import { finalKomikcastProvider } from "./komikcast";
 
 export const providers: Record<string, MangaProvider> = {
   shinigami: shinigamiProvider,
   mangadex: mangadexProvider,
-  mangafire: mangafireProvider
+  mangafire: mangafireProvider,
+  komikcast: finalKomikcastProvider
 };
 
 export const getProvider = (name: string): MangaProvider => {

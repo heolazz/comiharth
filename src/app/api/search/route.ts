@@ -11,6 +11,19 @@ export async function GET(request: NextRequest) {
     const genre = searchParams.get("genre") || "";
     const status = searchParams.get("status") || "";
     const sort = searchParams.get("sort") || "";
+    const action = searchParams.get("action");
+
+    if (action === "genres" && providerName === "komikcast") {
+      const res = await fetch("https://be.komikcast.cc/genres", {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
+        next: { revalidate: 86400 } // Cache for 24 hours
+      });
+      if (!res.ok) throw new Error("Failed to fetch genres");
+      const json = await res.json();
+      return NextResponse.json(json);
+    }
 
     if (!query && !format && !genre && !status) {
       return NextResponse.json({ success: true, data: [] });
