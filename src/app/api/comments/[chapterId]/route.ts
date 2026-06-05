@@ -9,19 +9,103 @@ export async function GET(
     const { searchParams } = request.nextUrl;
     
     const type = searchParams.get("type") || "chapter"; // "chapter" or "series"
-    const prefix = type === "series" ? "series%2F" : "chapter%2F";
+    const provider = searchParams.get("provider") || "shinigami";
+    const page = searchParams.get("page") || "1";
+    const pageSize = searchParams.get("pageSize") || "10";
     
-    // Extract the real ID if it contains a provider delimiter (e.g. comicId~realChapterId)
-    // Only apply this parsing for chapters, series ID is usually pristine
+    if (provider === "komikcast") {
+      // 1. Get numeric series ID from the slug
+      let slug = chapterId;
+      let chapterNumber = "";
+      
+      if (type === "chapter" && chapterId.includes("~")) {
+        const parts = chapterId.split("~");
+        slug = parts[0];
+        chapterNumber = parts[1];
+      }
+      
+      const seriesRes = await fetch(`https://be.komikcast.cc/series/${slug}?includeMeta=true`, {
+        headers: { "User-Agent": "Mozilla/5.0" }
+      });
+      if (!seriesRes.ok) throw new Error("Failed to fetch komikcast series info");
+      const seriesJson = await seriesRes.json();
+      const seriesNumericId = seriesJson.data?.id || seriesJson.id;
+      
+      let endpoint = `https://be.komikcast.cc/series/${seriesNumericId}/comments?take=${pageSize}&page=${page}`;
+      
+      // 2. If it's a chapter, we need the numeric chapter ID
+      if (type === "chapter" && chapterNumber) {
+        const chaptersRes = await fetch(`https://be.komikcast.cc/series/${slug}/chapters`, {
+          headers: { "User-Agent": "Mozilla/5.0" }
+        });
+        const chaptersJson = await chaptersRes.json();
+        const items = Array.isArray(chaptersJson.data) ? chaptersJson.data : (Array.isArray(chaptersJson) ? chaptersJson : []);
+        
+        const foundChapter = items.find((c: any) => {
+          const cNum = String(c.chapterIndex ?? c.data?.chapterIndex ?? c.data?.number ?? c.data?.index ?? "");
+          return cNum === chapterNumber;
+        });
+        
+        if (foundChapter) {
+          const chapterNumericId = foundChapter.id;
+          endpoint += `&chapterId=${chapterNumericId}`;
+        }
+      }
+      
+      console.log(`Proxying komikcast comment request to: ${endpoint}`);
+      const commentsRes = await fetch(endpoint, { headers: { "User-Agent": "Mozilla/5.0" } });
+      if (!commentsRes.ok) throw new Error(`Komikcast comments error: ${commentsRes.status}`);
+      const commentsJson = await commentsRes.json();
+      const komikcastComments = commentsJson.data || [];
+      
+      // Map komikcast comments to expected format
+      const mappedComments = komikcastComments.map((c: any) => {
+        const username = c.data?.user?.metadata?.username || c.data?.user?.fullName || "Anonymous";
+        const avatarUrl = c.data?.user?.avatar || "";
+        const time = new Date(c.createdAt).getTime();
+        
+        return {
+          status: "approved",
+          comment: c.content,
+          link: "",
+          nick: username,
+          pid: null,
+          rid: null,
+          user_id: c.data?.user?.id || 0,
+          sticky: false,
+          like: c.data?.votes?.upvotes || 0,
+          objectId: c.id,
+          level: 0,
+          type: c.data?.user?.metadata?.role === "admin" ? "admin" : "user",
+          label: null,
+          avatar: avatarUrl,
+          orig: c.content,
+          time: time,
+          children: []
+        };
+      });
+      
+      return NextResponse.json({
+        success: true,
+        data: {
+          data: {
+            count: commentsJson.meta?.total || mappedComments.length, // approximation
+            totalPages: commentsJson.meta?.totalPages || (mappedComments.length > 0 ? Number(page) + 1 : Number(page)),
+            data: mappedComments
+          }
+        }
+      });
+    }
+
+    // Shinigami logic
+    const prefix = type === "series" ? "series%2F" : "chapter%2F";
+    const sortBy = searchParams.get("sortBy") || "like_desc";
+
     const realId = (type === "chapter" && chapterId.includes("~"))
       ? chapterId.split("~")[1] 
       : (type === "chapter" && chapterId.includes("-chapter-"))
         ? chapterId.split("-chapter-")[1] 
         : chapterId;
-
-    const page = searchParams.get("page") || "1";
-    const pageSize = searchParams.get("pageSize") || "10";
-    const sortBy = searchParams.get("sortBy") || "like_desc";
 
     const targetUrl = `https://commento.shngm.io/api/comment?path=${prefix}${encodeURIComponent(realId)}&pageSize=${pageSize}&page=${page}&lang=en&sortBy=${sortBy}`;
     

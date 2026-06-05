@@ -512,10 +512,11 @@ export default function ReaderPage({
         />
 
         {/* Dynamic Comments Section */}
-        {provider === "shinigami" && (
+        {(provider === "shinigami" || provider === "komikcast") && (
           <div className="px-4 md:px-8">
             <Comments 
               id={chapterId} 
+              provider={provider}
               type="chapter"
               theme={preferences.theme} 
             />

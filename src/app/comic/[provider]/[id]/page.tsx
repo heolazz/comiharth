@@ -322,10 +322,11 @@ export default function ComicDetailPage({
         </section>
 
         {/* Dynamic Reviews/Comments Section */}
-        {provider === "shinigami" && (
+        {(provider === "shinigami" || provider === "komikcast") && (
           <section className="mt-4 pt-10 border-t border-border-dark/20">
             <Comments 
               id={id} 
+              provider={provider}
               type="series"
               theme={commentsTheme} 
             />
