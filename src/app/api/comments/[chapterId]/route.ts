@@ -24,7 +24,7 @@ export async function GET(
         chapterNumber = parts[1];
       }
       
-      const GAS_PROXY_URL = "https://komikcast-proxy.heolazzzz.workers.dev/";
+      const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
       const proxyUrl = (url: string) => {
         const isDev = process.env.NODE_ENV === "development";
         return isDev ? url : `${GAS_PROXY_URL}?url=${encodeURIComponent(url)}`;

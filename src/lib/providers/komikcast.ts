@@ -1,6 +1,6 @@
 import { MangaProvider, ComicSearchResult, ComicDetail, Chapter, ChapterPages } from "./types";
 
-const GAS_PROXY_URL = "https://komikcast-proxy.heolazzzz.workers.dev/";
+const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
 const KOMIKCAST_BASE_URL = "https://be.komikcast.cc";
 
 async function fetchKomikcast<T>(path: string): Promise<T> {

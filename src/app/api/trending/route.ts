@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const source = searchParams.get("source") || "shinigami";
 
     if (source === "komikcast") {
-      const GAS_PROXY_URL = "https://komikcast-proxy.heolazzzz.workers.dev/";
+      const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
       const targetUrl = "https://be.komikcast.cc/series?preset=banner&includeMeta=true";
       const isDev = process.env.NODE_ENV === "development";
       const proxyUrl = isDev ? targetUrl : `${GAS_PROXY_URL}?url=${encodeURIComponent(targetUrl)}`;
