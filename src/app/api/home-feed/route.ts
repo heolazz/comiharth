@@ -9,23 +9,26 @@ export async function GET(request: Request) {
     const source = searchParams.get("source") || "shinigami";
 
     if (source === "komikcast") {
-      const headers = { 
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Referer": "https://komikcast.cc/",
-        "Origin": "https://komikcast.cc",
-        "Accept": "application/json, text/plain, */*",
-        "X-Forwarded-For": `114.125.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`
+      const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
+      const proxyUrl = (url: string) => `${GAS_PROXY_URL}?url=${encodeURIComponent(url)}`;
+      
+      const fetchProxy = async (url: string) => {
+        const res = await fetch(proxyUrl(url), { next: { revalidate: 3600 } });
+        const json = await res.json();
+        if (json.error) throw new Error(json.error);
+        return json;
       };
+
       const [
         popularJson,
         recentManhwaJson,
         recentMangaJson,
         recentManhuaJson
       ] = await Promise.all([
-        fetch("https://be.komikcast.cc/series?preset=popular_all&take=50&takeChapter=2&includeMeta=true", { next: { revalidate: 3600 }, headers }).then(r => r.json()),
-        fetch("https://be.komikcast.cc/series?format=manhwa&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1", { next: { revalidate: 3600 }, headers }).then(r => r.json()),
-        fetch("https://be.komikcast.cc/series?format=manga&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1", { next: { revalidate: 3600 }, headers }).then(r => r.json()),
-        fetch("https://be.komikcast.cc/series?format=manhua&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1", { next: { revalidate: 3600 }, headers }).then(r => r.json())
+        fetchProxy("https://be.komikcast.cc/series?preset=popular_all&take=50&takeChapter=2&includeMeta=true"),
+        fetchProxy("https://be.komikcast.cc/series?format=manhwa&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1"),
+        fetchProxy("https://be.komikcast.cc/series?format=manga&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1"),
+        fetchProxy("https://be.komikcast.cc/series?format=manhua&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1")
       ]);
 
       const getComicType = (format?: string) => {

@@ -14,15 +14,16 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get("action");
 
     if (action === "genres" && providerName === "komikcast") {
-      const res = await fetch("https://be.komikcast.cc/genres", {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        },
-        next: { revalidate: 86400 } // Cache for 24 hours
+      const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
+      const proxyUrl = `${GAS_PROXY_URL}?url=${encodeURIComponent("https://be.komikcast.cc/genres")}`;
+      const res = await fetch(proxyUrl, {
+        next: { revalidate: 3600 }
       });
-      if (!res.ok) throw new Error("Failed to fetch genres");
       const json = await res.json();
-      return NextResponse.json(json);
+      if (json.error) throw new Error(json.error);
+      
+      const genres = json.data || json;
+      return NextResponse.json(genres);
     }
 
     if (!query && !format && !genre && !status) {

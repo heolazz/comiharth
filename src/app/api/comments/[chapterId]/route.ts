@@ -24,21 +24,28 @@ export async function GET(
         chapterNumber = parts[1];
       }
       
-      const seriesRes = await fetch(`https://be.komikcast.cc/series/${slug}?includeMeta=true`, {
-        headers: { "User-Agent": "Mozilla/5.0" }
+      const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
+      const proxyUrl = (url: string) => `${GAS_PROXY_URL}?url=${encodeURIComponent(url)}`;
+      
+      const seriesRes = await fetch(proxyUrl(`https://be.komikcast.cc/series/${slug}?includeMeta=true`), {
+        next: { revalidate: 3600 }
       });
       if (!seriesRes.ok) throw new Error("Failed to fetch komikcast series info");
-      const seriesJson = await seriesRes.json();
+      const seriesJsonRaw = await seriesRes.json();
+      if (seriesJsonRaw.error) throw new Error(seriesJsonRaw.error);
+      const seriesJson = seriesJsonRaw;
       const seriesNumericId = seriesJson.data?.id || seriesJson.id;
       
       let endpoint = `https://be.komikcast.cc/series/${seriesNumericId}/comments?take=${pageSize}&page=${page}`;
       
       // 2. If it's a chapter, we need the numeric chapter ID
       if (type === "chapter" && chapterNumber) {
-        const chaptersRes = await fetch(`https://be.komikcast.cc/series/${slug}/chapters`, {
-          headers: { "User-Agent": "Mozilla/5.0" }
+        const chaptersRes = await fetch(proxyUrl(`https://be.komikcast.cc/series/${slug}/chapters`), {
+          next: { revalidate: 3600 }
         });
-        const chaptersJson = await chaptersRes.json();
+        const chaptersJsonRaw = await chaptersRes.json();
+        if (chaptersJsonRaw.error) throw new Error(chaptersJsonRaw.error);
+        const chaptersJson = chaptersJsonRaw;
         const items = Array.isArray(chaptersJson.data) ? chaptersJson.data : (Array.isArray(chaptersJson) ? chaptersJson : []);
         
         const foundChapter = items.find((c: any) => {
@@ -53,9 +60,11 @@ export async function GET(
       }
       
       console.log(`Proxying komikcast comment request to: ${endpoint}`);
-      const commentsRes = await fetch(endpoint, { headers: { "User-Agent": "Mozilla/5.0" } });
+      const commentsRes = await fetch(proxyUrl(endpoint));
       if (!commentsRes.ok) throw new Error(`Komikcast comments error: ${commentsRes.status}`);
-      const commentsJson = await commentsRes.json();
+      const commentsJsonRaw = await commentsRes.json();
+      if (commentsJsonRaw.error) throw new Error(commentsJsonRaw.error);
+      const commentsJson = commentsJsonRaw;
       const komikcastComments = commentsJson.data || [];
       
       // Map komikcast comments to expected format

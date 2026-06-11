@@ -1,25 +1,25 @@
 import { MangaProvider, ComicSearchResult, ComicDetail, Chapter, ChapterPages } from "./types";
 
+const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
 const KOMIKCAST_BASE_URL = "https://be.komikcast.cc";
 
 async function fetchKomikcast<T>(path: string): Promise<T> {
-  const url = `${KOMIKCAST_BASE_URL}${path}`;
+  const targetUrl = `${KOMIKCAST_BASE_URL}${path}`;
+  const url = `${GAS_PROXY_URL}?url=${encodeURIComponent(targetUrl)}`;
   const res = await fetch(url, {
-    next: { revalidate: 3600 },
-    headers: {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      "Referer": "https://komikcast.cc/",
-      "Origin": "https://komikcast.cc",
-      "Accept": "application/json, text/plain, */*",
-      "X-Forwarded-For": `114.125.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`
-    }
+    next: { revalidate: 3600 }
   });
 
   if (!res.ok) {
     throw new Error(`Komikcast API error: ${res.status}`);
   }
 
-  return res.json();
+  const json = await res.json();
+  if (json.error) {
+    throw new Error(`Proxy error: ${json.error}`);
+  }
+
+  return json;
 }
 
 function getComicType(format?: string): "manga" | "manhwa" | "manhua" | "comic" | "unknown" {
