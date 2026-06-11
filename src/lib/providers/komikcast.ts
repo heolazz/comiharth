@@ -1,11 +1,12 @@
 import { MangaProvider, ComicSearchResult, ComicDetail, Chapter, ChapterPages } from "./types";
 
-const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
+const GAS_PROXY_URL = "https://komikcast-proxy.heolazzzz.workers.dev/";
 const KOMIKCAST_BASE_URL = "https://be.komikcast.cc";
 
 async function fetchKomikcast<T>(path: string): Promise<T> {
   const targetUrl = `${KOMIKCAST_BASE_URL}${path}`;
-  const url = `${GAS_PROXY_URL}?url=${encodeURIComponent(targetUrl)}`;
+  const isDev = process.env.NODE_ENV === "development";
+  const url = isDev ? targetUrl : `${GAS_PROXY_URL}?url=${encodeURIComponent(targetUrl)}`;
   const res = await fetch(url, {
     next: { revalidate: 3600 }
   });
@@ -15,7 +16,7 @@ async function fetchKomikcast<T>(path: string): Promise<T> {
   }
 
   const json = await res.json();
-  if (json.error) {
+  if (!isDev && json.error) {
     throw new Error(`Proxy error: ${json.error}`);
   }
 

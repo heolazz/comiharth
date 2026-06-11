@@ -24,15 +24,19 @@ export async function GET(
         chapterNumber = parts[1];
       }
       
-      const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
-      const proxyUrl = (url: string) => `${GAS_PROXY_URL}?url=${encodeURIComponent(url)}`;
+      const GAS_PROXY_URL = "https://komikcast-proxy.heolazzzz.workers.dev/";
+      const proxyUrl = (url: string) => {
+        const isDev = process.env.NODE_ENV === "development";
+        return isDev ? url : `${GAS_PROXY_URL}?url=${encodeURIComponent(url)}`;
+      };
       
       const seriesRes = await fetch(proxyUrl(`https://be.komikcast.cc/series/${slug}?includeMeta=true`), {
         next: { revalidate: 3600 }
       });
       if (!seriesRes.ok) throw new Error("Failed to fetch komikcast series info");
       const seriesJsonRaw = await seriesRes.json();
-      if (seriesJsonRaw.error) throw new Error(seriesJsonRaw.error);
+      const isDev = process.env.NODE_ENV === "development";
+      if (!isDev && seriesJsonRaw.error) throw new Error(seriesJsonRaw.error);
       const seriesJson = seriesJsonRaw;
       const seriesNumericId = seriesJson.data?.id || seriesJson.id;
       
@@ -44,7 +48,7 @@ export async function GET(
           next: { revalidate: 3600 }
         });
         const chaptersJsonRaw = await chaptersRes.json();
-        if (chaptersJsonRaw.error) throw new Error(chaptersJsonRaw.error);
+        if (!isDev && chaptersJsonRaw.error) throw new Error(chaptersJsonRaw.error);
         const chaptersJson = chaptersJsonRaw;
         const items = Array.isArray(chaptersJson.data) ? chaptersJson.data : (Array.isArray(chaptersJson) ? chaptersJson : []);
         
@@ -63,7 +67,7 @@ export async function GET(
       const commentsRes = await fetch(proxyUrl(endpoint));
       if (!commentsRes.ok) throw new Error(`Komikcast comments error: ${commentsRes.status}`);
       const commentsJsonRaw = await commentsRes.json();
-      if (commentsJsonRaw.error) throw new Error(commentsJsonRaw.error);
+      if (!isDev && commentsJsonRaw.error) throw new Error(commentsJsonRaw.error);
       const commentsJson = commentsJsonRaw;
       const komikcastComments = commentsJson.data || [];
       

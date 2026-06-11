@@ -9,13 +9,17 @@ export async function GET(request: Request) {
     const source = searchParams.get("source") || "shinigami";
 
     if (source === "komikcast") {
-      const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
-      const proxyUrl = (url: string) => `${GAS_PROXY_URL}?url=${encodeURIComponent(url)}`;
+      const GAS_PROXY_URL = "https://komikcast-proxy.heolazzzz.workers.dev/";
+      const proxyUrl = (url: string) => {
+        const isDev = process.env.NODE_ENV === "development";
+        return isDev ? url : `${GAS_PROXY_URL}?url=${encodeURIComponent(url)}`;
+      };
       
       const fetchProxy = async (url: string) => {
         const res = await fetch(proxyUrl(url), { next: { revalidate: 3600 } });
         const json = await res.json();
-        if (json.error) throw new Error(json.error);
+        const isDev = process.env.NODE_ENV === "development";
+        if (!isDev && json.error) throw new Error(json.error);
         return json;
       };
 
