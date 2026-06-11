@@ -9,7 +9,13 @@ export async function GET(request: Request) {
     const source = searchParams.get("source") || "shinigami";
 
     if (source === "komikcast") {
-      const headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" };
+      const headers = { 
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Referer": "https://komikcast.cc/",
+        "Origin": "https://komikcast.cc",
+        "Accept": "application/json, text/plain, */*",
+        "X-Forwarded-For": `114.125.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`
+      };
       const res = await fetch("https://be.komikcast.cc/series?preset=banner&includeMeta=true", { next: { revalidate: 3600 }, headers });
       if (!res.ok) throw new Error("Failed to fetch banner from komikcast");
       const json = await res.json();
