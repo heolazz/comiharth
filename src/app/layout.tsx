@@ -15,7 +15,13 @@ export const metadata: Metadata = {
     description: "Premium, dark-themed manga, manhwa, and manhua vertical scroll webtoon reader.",
     type: "website",
     siteName: "ComiHarth"
-  }
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/logo.png",
+  },
+  manifest: "/manifest.json"
 };
 
 export default function RootLayout({
