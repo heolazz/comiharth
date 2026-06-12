@@ -54,3 +54,13 @@ CLAUDE.md
 planning.md
 mangafire_manga_reader_planning.md
 shinigami_manga_reader_planning.md
+
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+
+!.env.example
