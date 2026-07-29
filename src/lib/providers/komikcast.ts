@@ -191,6 +191,9 @@ export const komikcastProviderPagesAdapter = {
       pages = sortedKeys.map(k => dataImages[k]).filter(Boolean) as string[];
     }
 
+    // Pass images through local proxy to bypass hotlink protection
+    pages = pages.map(url => `/api/proxy-image?url=${encodeURIComponent(url)}&referer=${encodeURIComponent("https://komikcast.cc/")}`);
+
     // Fetch chapters list to determine next/prev
     let nextChapterId: string | undefined = undefined;
     let previousChapterId: string | undefined = undefined;
