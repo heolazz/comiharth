@@ -2,10 +2,11 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ComicDetail, Chapter } from "@/lib/providers/types";
 import ChapterList from "@/components/comic/ChapterList";
 import Comments from "@/components/reader/ChapterComments";
-import { Play, Heart, Star, BookOpen, User, Loader2 } from "lucide-react";
+import { ArrowLeft, Play, Heart, Star, BookOpen, User, Loader2 } from "lucide-react";
 
 type FavoriteItem = {
   id: string;
@@ -28,6 +29,7 @@ export default function ComicDetailPage({
   params: Promise<{ provider: string; id: string }>;
 }) {
   const { provider, id } = use(params);
+  const router = useRouter();
   
   const [comic, setComic] = useState<ComicDetail | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
@@ -178,6 +180,15 @@ export default function ComicDetailPage({
     <div className="w-full relative min-h-screen bg-background transition-colors duration-300">
 
       <div className="mx-auto max-w-6xl px-4 md:px-8 pt-10 pb-20 relative z-10 flex flex-col gap-12">
+        {/* Back Button */}
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 text-sm font-bold text-muted-text hover:text-accent-green transition-colors w-fit -mb-6 cursor-pointer"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back</span>
+        </button>
+
         {/* Splitted header info */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
           
