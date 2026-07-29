@@ -240,6 +240,21 @@ export default function ReaderPage({
     });
 
     localStorage.setItem("comiharth-history", JSON.stringify(historyList));
+
+    // Save to read chapters
+    const savedReadChapters = localStorage.getItem("comiharth-read-chapters");
+    let readChaptersList: string[] = [];
+    if (savedReadChapters) {
+      try {
+        readChaptersList = JSON.parse(savedReadChapters);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if (!readChaptersList.includes(chId)) {
+      readChaptersList.push(chId);
+      localStorage.setItem("comiharth-read-chapters", JSON.stringify(readChaptersList));
+    }
   };
 
   const handlePreferencesChange = (newPrefs: ReaderPreferences) => {

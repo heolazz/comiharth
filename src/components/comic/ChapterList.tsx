@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Chapter } from "@/lib/providers/types";
-import { ArrowUpDown, Search, Play, BookOpen } from "lucide-react";
+import { ArrowUpDown, Search, Play, BookOpen, Check } from "lucide-react";
 
 interface ChapterListProps {
   chapters: Chapter[];
@@ -13,6 +13,18 @@ interface ChapterListProps {
 export default function ChapterList({ chapters, provider }: ChapterListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDescending, setIsDescending] = useState(true);
+  const [readChapters, setReadChapters] = useState<string[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("comiharth-read-chapters");
+    if (saved) {
+      try {
+        setReadChapters(JSON.parse(saved));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
 
   // Filter and sort chapters
   const filteredChapters = chapters
@@ -74,8 +86,9 @@ export default function ChapterList({ chapters, provider }: ChapterListProps) {
               className="group flex items-center justify-between p-3.5 rounded-xl border border-border-dark/40 bg-surface hover:border-accent-green/30 hover:bg-surface-hover/80 hover:shadow-[0_4px_15px_rgba(0,200,83,0.05)] transition-all"
             >
               <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-bold text-foreground group-hover:text-accent-green transition-colors">
+                <span className={`text-sm font-bold transition-colors flex items-center gap-2 ${readChapters.includes(chapter.id) ? "text-muted-text" : "text-foreground group-hover:text-accent-green"}`}>
                   Chapter {chapter.chapterNumber}
+                  {readChapters.includes(chapter.id) && <Check className="h-4 w-4 text-accent-green" />}
                 </span>
                 {chapter.title && chapter.title !== `Chapter ${chapter.chapterNumber}` && (
                   <span className="text-[11px] text-muted-text font-semibold line-clamp-1">
@@ -86,11 +99,11 @@ export default function ChapterList({ chapters, provider }: ChapterListProps) {
               
               <div className="flex items-center gap-3">
                 {chapter.createdAt && (
-                  <span className="text-[10px] text-zinc-500 font-bold hidden md:inline">
+                  <span className="text-[10px] text-zinc-500 font-bold">
                     {chapter.createdAt}
                   </span>
                 )}
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface-hover border border-border-dark/50 group-hover:bg-accent-green group-hover:border-accent-green transition-all shadow-sm">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface-hover border border-border-dark/50 group-hover:bg-accent-green group-hover:border-accent-green transition-all shadow-sm shrink-0">
                   <Play className="h-3.5 w-3.5 fill-current text-muted-text group-hover:text-white transition-colors ml-0.5" />
                 </div>
               </div>
