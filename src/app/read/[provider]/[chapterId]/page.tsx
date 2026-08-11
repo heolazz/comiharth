@@ -27,7 +27,7 @@ export default function ReaderPage({
   const [preferences, setPreferences] = useState<ReaderPreferences>({
     width: "900px",
     mode: "vertical",
-    theme: "white", // default to white for fresh and clean Webtoon style
+    theme: "auto", // default to auto to respect global dark/light mode
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
@@ -285,8 +285,10 @@ export default function ReaderPage({
       case "black":
         return "bg-black text-zinc-400";
       case "white":
-      default:
         return "bg-white text-zinc-950";
+      case "auto":
+      default:
+        return "bg-background text-foreground";
     }
   };
 

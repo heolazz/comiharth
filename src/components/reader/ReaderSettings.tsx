@@ -5,7 +5,7 @@ import { Settings, Sliders, Monitor, Paintbrush } from "lucide-react";
 export type ReaderPreferences = {
   width: "fit" | "720px" | "900px" | "1200px";
   mode: "vertical" | "single";
-  theme: "black" | "gray" | "white";
+  theme: "auto" | "black" | "gray" | "white";
 };
 
 interface ReaderSettingsProps {
@@ -101,11 +101,12 @@ export default function ReaderSettings({
               <Paintbrush className="h-3.5 w-3.5" />
               Page Background
             </span>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {[
-                { val: "black", label: "Pitch Black", bg: "bg-black" },
+                { val: "auto", label: "Auto", bg: "bg-background" },
+                { val: "black", label: "Black", bg: "bg-black" },
                 { val: "gray", label: "Charcoal", bg: "bg-zinc-800" },
-                { val: "white", label: "Light Theme", bg: "bg-zinc-100" }
+                { val: "white", label: "Light", bg: "bg-zinc-100" }
               ].map((bgOption) => (
                 <button
                   key={bgOption.val}

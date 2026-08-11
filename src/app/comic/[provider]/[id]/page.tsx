@@ -38,7 +38,7 @@ export default function ComicDetailPage({
   const [isFavorited, setIsFavorited] = useState(false);
   const [resumeChapterId, setResumeChapterId] = useState<string | null>(null);
   const [resumeChapterNum, setResumeChapterNum] = useState<string | null>(null);
-  const [commentsTheme, setCommentsTheme] = useState<"white" | "gray" | "black">("white");
+  const [commentsTheme, setCommentsTheme] = useState<"auto" | "white" | "gray" | "black">("auto");
 
   useEffect(() => {
     const fetchDetails = async () => {
