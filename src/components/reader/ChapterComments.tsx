@@ -30,11 +30,13 @@ type CommentItem = {
   reply_user?: ReplyUser;
 };
 
+export type ThemeType = "auto" | "white" | "gray" | "black";
+
 type CommentsProps = {
   id: string;
   provider?: string;
   type?: "chapter" | "series";
-  theme?: "auto" | "white" | "gray" | "black";
+  theme?: ThemeType;
 };
 
 function formatCommentTime(timestamp: number) {
@@ -119,166 +121,14 @@ export default function Comments({ id, provider = "shinigami", type = "chapter",
     }
   };
 
-  // Theme styling helpers
-  const getContainerBg = () => {
-    switch (theme) {
-      case "black": return "bg-transparent text-zinc-300";
-      case "gray": return "bg-transparent text-zinc-100";
-      case "white": return "bg-transparent text-slate-800";
-      case "auto": default: return "bg-transparent text-foreground";
-    }
-  };
-
-  const getMutedText = () => {
-    switch (theme) {
-      case "black": return "text-zinc-500";
-      case "gray": return "text-zinc-400";
-      case "white": return "text-slate-500";
-      case "auto": default: return "text-muted-text";
-    }
-  };
-
-  const getBorderColor = () => {
-    switch (theme) {
-      case "black": return "border-[#1c1f27]";
-      case "gray": return "border-zinc-800/80";
-      case "white": return "border-slate-200";
-      case "auto": default: return "border-border-dark";
-    }
-  };
-
-  const getBodyTextColor = () => {
-    switch (theme) {
-      case "black": return "text-zinc-300";
-      case "gray": return "text-zinc-200";
-      case "white": return "text-slate-700";
-      case "auto": default: return "text-foreground";
-    }
-  };
-
-  const getForegroundText = () => {
-    switch (theme) {
-      case "black": return "text-zinc-100";
-      case "gray": return "text-zinc-50";
-      case "white": return "text-slate-900";
-      case "auto": default: return "text-foreground";
-    }
-  };
-
-  const getSurfaceBg = () => {
-    switch (theme) {
-      case "black": return "bg-[#121513]"; // Match global dark surface
-      case "gray": return "bg-zinc-800/50";
-      case "white": return "bg-white";
-      case "auto": default: return "bg-surface";
-    }
-  };
-
-  const getSurfaceHoverBg = () => {
-    switch (theme) {
-      case "black": return "hover:bg-[#191E1B]"; // Match global dark hover
-      case "gray": return "hover:bg-zinc-700/50";
-      case "white": return "hover:bg-slate-50";
-      case "auto": default: return "hover:bg-surface-hover";
-    }
-  };
-
-  // Fallback avatar generator
-  const renderAvatar = (nick: string, avatarUrl: string) => {
-    const initials = nick ? nick.trim().charAt(0).toUpperCase() : "?";
-    
-    return (
-      <div className="relative h-9 w-9 md:h-10 md:w-10 shrink-0">
-        <img
-          src={avatarUrl || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"}
-          alt={nick}
-          className="h-full w-full rounded-full object-cover border border-border-dark/5"
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-            const placeholder = e.currentTarget.nextElementSibling as HTMLDivElement;
-            if (placeholder) placeholder.style.display = "flex";
-          }}
-        />
-        <div
-          className="absolute inset-0 rounded-full bg-gradient-to-br from-accent-green to-emerald-600 text-zinc-950 flex items-center justify-center text-sm font-black border border-accent-green/20"
-          style={{ display: avatarUrl ? "none" : "flex" }}
-        >
-          {initials}
-        </div>
-      </div>
-    );
-  };
-
-  // Recursive comment card component
-  const CommentCard = ({ item, isChild = false }: { item: CommentItem; isChild?: boolean }) => {
-    const hasReplies = item.children && item.children.length > 0;
-
-    return (
-      <div className="flex flex-col gap-2.5 transition-all">
-        {/* Commenter info header */}
-        <div className="flex items-center gap-3">
-          {renderAvatar(item.nick, item.avatar)}
-          
-          <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className={`text-sm font-bold ${getForegroundText()}`}>{item.nick}</span>
-              {item.level > 0 && (
-                <span className="text-[9px] font-black uppercase tracking-wider bg-accent-green/10 text-accent-green border border-accent-green/20 px-1 rounded">
-                  Lv. {item.level}
-                </span>
-              )}
-              {item.type === "admin" && (
-                <span className="text-[9px] font-black uppercase tracking-wider bg-red-500/10 text-red-500 border border-red-500/20 px-1 rounded">
-                  Admin
-                </span>
-              )}
-            </div>
-            
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-text font-medium mt-0.5">
-              <span>{formatCommentTime(item.time)}</span>
-              {item.reply_user && (
-                <span className={`${getMutedText()} ml-0.5`}>
-                  · replied to <span className={`${getForegroundText()} font-semibold`}>@{item.reply_user.nick}</span>
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Comment Content body */}
-        <div 
-          className={`text-[14px] ${getBodyTextColor()} font-medium pl-0 md:pl-[52px] leading-relaxed break-words prose prose-sm ${theme === 'auto' ? 'dark:prose-invert' : (theme !== 'white' ? 'prose-invert' : '')} max-w-none`}
-          dangerouslySetInnerHTML={{ __html: item.comment }}
-        />
-
-        {/* Action toolbar */}
-        <div className="flex items-center gap-4 pl-0 md:pl-[52px] mt-0.5 text-[12px] font-bold">
-          <div className={`flex items-center gap-1.5 cursor-pointer hover:text-accent-green transition-colors ${item.like > 0 ? "text-accent-green" : getMutedText()}`}>
-            <ThumbsUp className="h-3.5 w-3.5 active:scale-90 transition-transform" />
-            <span>{item.like > 0 ? item.like : ""}</span>
-          </div>
-        </div>
-
-        {/* Render child replies */}
-        {hasReplies && (
-          <div className={`flex flex-col gap-5 mt-4 pl-4 md:pl-[52px] border-l-[2px] ${theme === 'white' ? 'border-slate-100' : 'border-zinc-800/80'}`}>
-            {item.children!.map((reply) => (
-              <CommentCard key={reply.objectId} item={reply} isChild={true} />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
-    <div className={`w-full max-w-[800px] mx-auto flex flex-col gap-8 py-8 ${getContainerBg()}`}>
+    <div className={`w-full max-w-[800px] mx-auto flex flex-col gap-8 py-8 ${getContainerBg(theme)}`}>
       
       {/* Header */}
-      <div className={`flex items-center justify-between pb-3 border-b ${getBorderColor()}`}>
-        <h3 className={`text-lg md:text-xl font-display font-extrabold flex items-center gap-2 ${getForegroundText()}`}>
+      <div className={`flex items-center justify-between pb-3 border-b ${getBorderColor(theme)}`}>
+        <h3 className={`text-lg md:text-xl font-display font-extrabold flex items-center gap-2 ${getForegroundText(theme)}`}>
           <span>Comments</span>
-          <span className={`text-muted-text text-sm md:text-base font-bold ${getSurfaceBg()} px-2.5 py-0.5 rounded-full`}>{totalCount}</span>
+          <span className={`text-muted-text text-sm md:text-base font-bold ${getSurfaceBg(theme)} px-2.5 py-0.5 rounded-full`}>{totalCount}</span>
         </h3>
         
         <button
@@ -286,7 +136,7 @@ export default function Comments({ id, provider = "shinigami", type = "chapter",
           className={`p-2 rounded-full flex items-center justify-center transition-all cursor-pointer ${
             theme === "white"
               ? "hover:bg-slate-100 text-slate-500"
-              : `${getSurfaceHoverBg()} text-muted-text hover:text-accent-green`
+              : `${getSurfaceHoverBg(theme)} text-muted-text hover:text-accent-green`
           }`}
           title="Refresh Comments"
         >
@@ -314,10 +164,10 @@ export default function Comments({ id, provider = "shinigami", type = "chapter",
         </div>
       ) : comments.length === 0 ? (
         <div className="text-center py-12 flex flex-col items-center justify-center gap-3">
-          <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'white' ? 'bg-slate-50' : getSurfaceBg()}`}>
-            <MessageSquare className={`h-5 w-5 ${getMutedText()}`} />
+          <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'white' ? 'bg-slate-50' : getSurfaceBg(theme)}`}>
+            <MessageSquare className={`h-5 w-5 ${getMutedText(theme)}`} />
           </div>
-          <h4 className={`text-sm font-bold ${getForegroundText()}`}>No comments yet</h4>
+          <h4 className={`text-sm font-bold ${getForegroundText(theme)}`}>No comments yet</h4>
           <p className="text-xs text-muted-text max-w-xs leading-relaxed font-medium">
             Be the first to share your thoughts on this chapter!
           </p>
@@ -325,8 +175,8 @@ export default function Comments({ id, provider = "shinigami", type = "chapter",
       ) : (
         <div className="flex flex-col">
           {comments.map((item, index) => (
-            <div key={item.objectId} className={`${index !== 0 ? `pt-6 mt-6 border-t ${getBorderColor()}` : ''}`}>
-              <CommentCard item={item} />
+            <div key={item.objectId} className={`${index !== 0 ? `pt-6 mt-6 border-t ${getBorderColor(theme)}` : ''}`}>
+              <CommentCard item={item} theme={theme} />
             </div>
           ))}
 
@@ -338,7 +188,7 @@ export default function Comments({ id, provider = "shinigami", type = "chapter",
               className={`w-full mt-8 h-11 rounded-full border text-xs font-bold cursor-pointer transition-all flex items-center justify-center gap-2 ${
                 theme === "white"
                   ? "bg-white border-slate-200 hover:bg-slate-50 text-slate-700"
-                  : `${getSurfaceBg()} border-border-dark/60 ${getSurfaceHoverBg()} ${getForegroundText()} hover:text-accent-green`
+                  : `${getSurfaceBg(theme)} border-border-dark/60 ${getSurfaceHoverBg(theme)} ${getForegroundText(theme)} hover:text-accent-green`
               }`}
             >
               {isLoadingMore ? (
@@ -360,3 +210,155 @@ export default function Comments({ id, provider = "shinigami", type = "chapter",
     </div>
   );
 }
+
+// Theme styling helpers
+const getContainerBg = (theme: ThemeType) => {
+  switch (theme) {
+    case "black": return "bg-transparent text-zinc-300";
+    case "gray": return "bg-transparent text-zinc-100";
+    case "white": return "bg-transparent text-slate-800";
+    case "auto": default: return "bg-transparent text-foreground";
+  }
+};
+
+const getMutedText = (theme: ThemeType) => {
+  switch (theme) {
+    case "black": return "text-zinc-500";
+    case "gray": return "text-zinc-400";
+    case "white": return "text-slate-500";
+    case "auto": default: return "text-muted-text";
+  }
+};
+
+const getBorderColor = (theme: ThemeType) => {
+  switch (theme) {
+    case "black": return "border-[#1c1f27]";
+    case "gray": return "border-zinc-800/80";
+    case "white": return "border-slate-200";
+    case "auto": default: return "border-border-dark";
+  }
+};
+
+const getBodyTextColor = (theme: ThemeType) => {
+  switch (theme) {
+    case "black": return "text-zinc-300";
+    case "gray": return "text-zinc-200";
+    case "white": return "text-slate-700";
+    case "auto": default: return "text-foreground";
+  }
+};
+
+const getForegroundText = (theme: ThemeType) => {
+  switch (theme) {
+    case "black": return "text-zinc-100";
+    case "gray": return "text-zinc-50";
+    case "white": return "text-slate-900";
+    case "auto": default: return "text-foreground";
+  }
+};
+
+const getSurfaceBg = (theme: ThemeType) => {
+  switch (theme) {
+    case "black": return "bg-[#121513]"; // Match global dark surface
+    case "gray": return "bg-zinc-800/50";
+    case "white": return "bg-white";
+    case "auto": default: return "bg-surface";
+  }
+};
+
+const getSurfaceHoverBg = (theme: ThemeType) => {
+  switch (theme) {
+    case "black": return "hover:bg-[#191E1B]"; // Match global dark hover
+    case "gray": return "hover:bg-zinc-700/50";
+    case "white": return "hover:bg-slate-50";
+    case "auto": default: return "hover:bg-surface-hover";
+  }
+};
+
+// Fallback avatar generator
+const renderAvatar = (nick: string, avatarUrl: string) => {
+  const initials = nick ? nick.trim().charAt(0).toUpperCase() : "?";
+  
+  return (
+    <div className="relative h-9 w-9 md:h-10 md:w-10 shrink-0">
+      <img
+        src={avatarUrl || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"}
+        alt={nick}
+        className="h-full w-full rounded-full object-cover border border-border-dark/5"
+        onError={(e) => {
+          e.currentTarget.style.display = "none";
+          const placeholder = e.currentTarget.nextElementSibling as HTMLDivElement;
+          if (placeholder) placeholder.style.display = "flex";
+        }}
+      />
+      <div
+        className="absolute inset-0 rounded-full bg-gradient-to-br from-accent-green to-emerald-600 text-zinc-950 flex items-center justify-center text-sm font-black border border-accent-green/20"
+        style={{ display: avatarUrl ? "none" : "flex" }}
+      >
+        {initials}
+      </div>
+    </div>
+  );
+};
+
+// Recursive comment card component
+const CommentCard = ({ item, theme, isChild = false }: { item: CommentItem; theme: ThemeType; isChild?: boolean }) => {
+  const hasReplies = item.children && item.children.length > 0;
+
+  return (
+    <div className="flex flex-col gap-2.5 transition-all">
+      {/* Commenter info header */}
+      <div className="flex items-center gap-3">
+        {renderAvatar(item.nick, item.avatar)}
+        
+        <div className="flex flex-col justify-center">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`text-sm font-bold ${getForegroundText(theme)}`}>{item.nick}</span>
+            {item.level > 0 && (
+              <span className="text-[9px] font-black uppercase tracking-wider bg-accent-green/10 text-accent-green border border-accent-green/20 px-1 rounded">
+                Lv. {item.level}
+              </span>
+            )}
+            {item.type === "admin" && (
+              <span className="text-[9px] font-black uppercase tracking-wider bg-red-500/10 text-red-500 border border-red-500/20 px-1 rounded">
+                Admin
+              </span>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-text font-medium mt-0.5">
+            <span>{formatCommentTime(item.time)}</span>
+            {item.reply_user && (
+              <span className={`${getMutedText(theme)} ml-0.5`}>
+                · replied to <span className={`${getForegroundText(theme)} font-semibold`}>@{item.reply_user.nick}</span>
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Comment Content body */}
+      <div 
+        className={`text-[14px] ${getBodyTextColor(theme)} font-medium pl-0 md:pl-[52px] leading-relaxed break-words prose prose-sm ${theme === 'auto' ? 'dark:prose-invert' : (theme !== 'white' ? 'prose-invert' : '')} max-w-none`}
+        dangerouslySetInnerHTML={{ __html: item.comment }}
+      />
+
+      {/* Action toolbar */}
+      <div className="flex items-center gap-4 pl-0 md:pl-[52px] mt-0.5 text-[12px] font-bold">
+        <div className={`flex items-center gap-1.5 cursor-pointer hover:text-accent-green transition-colors ${item.like > 0 ? "text-accent-green" : getMutedText(theme)}`}>
+          <ThumbsUp className="h-3.5 w-3.5 active:scale-90 transition-transform" />
+          <span>{item.like > 0 ? item.like : ""}</span>
+        </div>
+      </div>
+
+      {/* Render child replies */}
+      {hasReplies && (
+        <div className={`flex flex-col gap-5 mt-4 pl-4 md:pl-[52px] border-l-[2px] ${theme === 'white' ? 'border-slate-100' : 'border-zinc-800/80'}`}>
+          {item.children!.map((reply) => (
+            <CommentCard key={reply.objectId} item={reply} theme={theme} isChild={true} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
