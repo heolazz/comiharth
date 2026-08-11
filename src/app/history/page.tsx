@@ -63,6 +63,20 @@ export default function HistoryPage() {
     }
   };
 
+  const deleteHistoryItem = (comicId: string) => {
+    const saved = localStorage.getItem("comiharth-history");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as ReadingHistoryItem[];
+        const updated = parsed.filter(item => item.comicId !== comicId);
+        localStorage.setItem("comiharth-history", JSON.stringify(updated));
+        setHistoryList(updated);
+      } catch (e) {
+        console.error("Failed to delete history item:", e);
+      }
+    }
+  };
+
   return (
     <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8 py-10 md:py-16 flex flex-col gap-8 md:gap-12 transition-colors duration-500 overflow-hidden relative">
 
@@ -161,6 +175,19 @@ export default function HistoryPage() {
                       <Play className="h-4 w-4 md:h-5 md:w-5 fill-current ml-1" />
                     </div>
                   </div>
+
+                  {/* Delete Button */}
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      deleteHistoryItem(item.comicId);
+                    }}
+                    className="absolute top-2 right-2 h-6 w-6 md:h-7 md:w-7 rounded-full bg-black/60 hover:bg-red-500/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 transform hover:scale-110"
+                    title="Remove from history"
+                  >
+                    <Trash2 className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                  </button>
                 </Link>
 
                 {/* Info Block */}
