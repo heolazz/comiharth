@@ -146,11 +146,25 @@ export default function HistoryPage() {
                 <Link href={`/read/${item.provider}/${item.chapterId}`} className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-border-dark/30 shadow-sm group-hover:border-accent-green/40 group-hover:shadow-[0_8px_25px_rgba(0,200,83,0.15)] transition-all duration-300 block">
                   {/* Cover Image */}
                   <img
-                    src={item.comicCover}
+                    src={item.comicCover || ""}
                     alt={item.comicTitle}
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    style={{ display: item.comicCover ? "block" : "none" }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = "flex";
+                    }}
                   />
+                  
+                  {/* Fallback image */}
+                  <div 
+                    className="absolute inset-0 h-full w-full items-center justify-center bg-surface-hover text-muted-text text-xs font-bold z-0"
+                    style={{ display: item.comicCover ? "none" : "flex" }}
+                  >
+                    No Image
+                  </div>
                   
                   {/* Dynamic Badges */}
                   <div className="absolute top-2 left-2 flex flex-wrap gap-1.5 z-10">

@@ -56,12 +56,50 @@ export default function ComicDetailPage({
           throw new Error(detailJson.error?.message || "Failed to load comic details");
         }
 
-        // Fetch chapters list
         const chaptersRes = await fetch(`/api/chapters/${provider}/${id}`);
         if (chaptersRes.ok) {
           const chaptersJson = await chaptersRes.json();
           if (chaptersJson.success) {
             setChapters(chaptersJson.data);
+          }
+        }
+
+        // Self-healing: Update cover in localStorage if it was missing or broken
+        if (detailJson.success && detailJson.data.cover) {
+          const freshCover = detailJson.data.cover;
+          
+          // Repair favorites
+          const savedFavorites = localStorage.getItem("comiharth-favorites");
+          if (savedFavorites) {
+            try {
+              let parsedFavs = JSON.parse(savedFavorites);
+              let updatedFavs = false;
+              parsedFavs = parsedFavs.map((fav: any) => {
+                if (fav.id === id && fav.provider === provider && fav.cover !== freshCover) {
+                  updatedFavs = true;
+                  return { ...fav, cover: freshCover };
+                }
+                return fav;
+              });
+              if (updatedFavs) localStorage.setItem("comiharth-favorites", JSON.stringify(parsedFavs));
+            } catch (e) {}
+          }
+          
+          // Repair history
+          const savedHistory = localStorage.getItem("comiharth-history");
+          if (savedHistory) {
+            try {
+              let parsedHist = JSON.parse(savedHistory);
+              let updatedHist = false;
+              parsedHist = parsedHist.map((h: any) => {
+                if (h.comicId === id && h.provider === provider && h.comicCover !== freshCover) {
+                  updatedHist = true;
+                  return { ...h, comicCover: freshCover };
+                }
+                return h;
+              });
+              if (updatedHist) localStorage.setItem("comiharth-history", JSON.stringify(parsedHist));
+            } catch (e) {}
           }
         }
       } catch (err: any) {
