@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { MessageSquare, ThumbsUp, ChevronDown, ChevronUp, RefreshCw, Clock } from "lucide-react";
 
 type ReplyUser = {
@@ -302,7 +302,7 @@ const renderAvatar = (nick: string, avatarUrl: string) => {
 };
 
 // Recursive comment card component
-const CommentCard = ({ item, theme, isChild = false }: { item: CommentItem; theme: ThemeType; isChild?: boolean }) => {
+const CommentCard = memo(({ item, theme, isChild = false }: { item: CommentItem; theme: ThemeType; isChild?: boolean }) => {
   const hasReplies = item.children && item.children.length > 0;
 
   return (
@@ -339,7 +339,7 @@ const CommentCard = ({ item, theme, isChild = false }: { item: CommentItem; them
 
       {/* Comment Content body */}
       <div 
-        className={`text-[14px] ${getBodyTextColor(theme)} font-medium pl-0 md:pl-[52px] leading-relaxed break-words prose prose-sm ${theme === 'auto' ? 'dark:prose-invert' : (theme !== 'white' ? 'prose-invert' : '')} max-w-none`}
+        className={`text-[14px] ${getBodyTextColor(theme)} font-medium pl-0 md:pl-[52px] leading-relaxed break-words prose prose-sm ${theme === 'auto' ? 'dark:prose-invert' : (theme !== 'white' ? 'prose-invert' : '')} max-w-none transform-gpu`}
         dangerouslySetInnerHTML={{ __html: item.comment }}
       />
 
@@ -361,4 +361,4 @@ const CommentCard = ({ item, theme, isChild = false }: { item: CommentItem; them
       )}
     </div>
   );
-};
+});
