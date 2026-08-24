@@ -10,7 +10,7 @@ type ComicSource = "shinigami" | "komikcast";
 
 const sources: { label: string; value: ComicSource }[] = [
   { label: "Shinigami", value: "shinigami" },
-  { label: "Komikcast", value: "komikcast" },
+  // { label: "Komikcast (Lambat)", value: "komikcast" }, // Disembunyikan sementara karena API lambat
 ];
 
 function NavbarContent() {
@@ -27,7 +27,9 @@ function NavbarContent() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const querySource = (searchParams.get("source") || searchParams.get("provider")) as ComicSource;
-  const currentSource = querySource || (typeof window !== "undefined" ? (localStorage.getItem("comic-source") as ComicSource) || "shinigami" : "shinigami");
+  // Force shinigami since komikcast is hidden/slow
+  let currentSource = querySource || (typeof window !== "undefined" ? (localStorage.getItem("comic-source") as ComicSource) || "shinigami" : "shinigami");
+  if (currentSource === "komikcast") currentSource = "shinigami";
   const currentLabel = sources.find((item) => item.value === currentSource)?.label ?? "Shinigami";
 
   // Prevent hydration warnings and handle scroll
