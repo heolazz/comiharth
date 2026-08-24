@@ -1,7 +1,7 @@
 import { MangaProvider, ComicSearchResult, ComicDetail, Chapter, ChapterPages } from "./types";
 
 const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
-const KOMIKCAST_BASE_URL = "https://be.komikcast.cc";
+const KOMIKCAST_BASE_URL = "https://api.voratoon.com";
 
 async function fetchKomikcast<T>(path: string): Promise<T> {
   const targetUrl = `${KOMIKCAST_BASE_URL}${path}`;
@@ -192,7 +192,7 @@ export const komikcastProviderPagesAdapter = {
     }
 
     // Pass images through local proxy to bypass hotlink protection
-    pages = pages.map(url => `/api/proxy-image?url=${encodeURIComponent(url)}&referer=${encodeURIComponent("https://komikcast.cc/")}`);
+    pages = pages.map(url => `/api/proxy-image?url=${encodeURIComponent(url)}&referer=${encodeURIComponent("https://v1.voratoon.com/")}`);
 
     // Fetch chapters list to determine next/prev
     let nextChapterId: string | undefined = undefined;
