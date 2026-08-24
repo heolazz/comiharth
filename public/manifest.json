@@ -1,7 +1,7 @@
 {
   "name": "ComiHarth",
   "short_name": "ComiHarth",
-  "description": "Premium Cinematic Manga Reader",
+  "description": "Read Manga Online",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     if (action === "genres" && providerName === "komikcast") {
       const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
-      const targetUrl = "https://be.komikcast.cc/genres";
+      const targetUrl = "https://api.voratoon.com/genres";
       const isDev = process.env.NODE_ENV === "development";
       const proxyUrl = isDev ? targetUrl : `${GAS_PROXY_URL}?url=${encodeURIComponent(targetUrl)}`;
       const res = await fetch(proxyUrl, {

@@ -29,10 +29,10 @@ export async function GET(request: Request) {
         recentMangaJson,
         recentManhuaJson
       ] = await Promise.all([
-        fetchProxy("https://be.komikcast.cc/series?preset=popular_all&take=50&takeChapter=2&includeMeta=true"),
-        fetchProxy("https://be.komikcast.cc/series?format=manhwa&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1"),
-        fetchProxy("https://be.komikcast.cc/series?format=manga&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1"),
-        fetchProxy("https://be.komikcast.cc/series?format=manhua&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1")
+        fetchProxy("https://api.voratoon.com/series?preset=popular_all&take=50&takeChapter=2&includeMeta=true"),
+        fetchProxy("https://api.voratoon.com/series?format=manhwa&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1"),
+        fetchProxy("https://api.voratoon.com/series?format=manga&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1"),
+        fetchProxy("https://api.voratoon.com/series?format=manhua&takeChapter=2&includeMeta=true&sort=latest&sortOrder=desc&take=30&page=1")
       ]);
 
       const getComicType = (format?: string) => {

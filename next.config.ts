@@ -17,7 +17,15 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "be.komikcast.cc",
+        hostname: "api.voratoon.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cvr.voratoon.id",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.voratoon.com",
       },
     ],
   },

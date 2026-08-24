@@ -30,7 +30,7 @@ export async function GET(
         return isDev ? url : `${GAS_PROXY_URL}?url=${encodeURIComponent(url)}`;
       };
       
-      const seriesRes = await fetch(proxyUrl(`https://be.komikcast.cc/series/${slug}?includeMeta=true`), {
+      const seriesRes = await fetch(proxyUrl(`https://api.voratoon.com/series/${slug}?includeMeta=true`), {
         next: { revalidate: 3600 }
       });
       if (!seriesRes.ok) throw new Error("Failed to fetch komikcast series info");
@@ -40,11 +40,11 @@ export async function GET(
       const seriesJson = seriesJsonRaw;
       const seriesNumericId = seriesJson.data?.id || seriesJson.id;
       
-      let endpoint = `https://be.komikcast.cc/series/${seriesNumericId}/comments?take=${pageSize}&page=${page}`;
+      let endpoint = `https://api.voratoon.com/series/${seriesNumericId}/comments?take=${pageSize}&page=${page}`;
       
       // 2. If it's a chapter, we need the numeric chapter ID
       if (type === "chapter" && chapterNumber) {
-        const chaptersRes = await fetch(proxyUrl(`https://be.komikcast.cc/series/${slug}/chapters`), {
+        const chaptersRes = await fetch(proxyUrl(`https://api.voratoon.com/series/${slug}/chapters`), {
           next: { revalidate: 3600 }
         });
         const chaptersJsonRaw = await chaptersRes.json();

@@ -6,7 +6,7 @@ import MobileNav from "@/components/layout/MobileNav";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "ComiHarth - Premium Cinematic Manga Reader",
+  title: "ComiHarth - Read Manga Online",
   description: "Read your favorite manga, manhwa, and manhua with an immersive, high-performance dark cinematic user experience.",
   keywords: ["manga", "manhwa", "manhua", "webtoon", "reader", "mangafire", "comiharth", "anime", "reading"],
   authors: [{ name: "ComiHarth" }],
