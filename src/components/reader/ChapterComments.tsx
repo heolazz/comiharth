@@ -302,8 +302,13 @@ const renderAvatar = (nick: string, avatarUrl: string) => {
 };
 
 // Recursive comment card component
+const countReplies = (c: CommentItem): number =>
+  (c.children || []).reduce((sum, r) => sum + 1 + countReplies(r), 0);
+
 const CommentCard = memo(({ item, theme, isChild = false }: { item: CommentItem; theme: ThemeType; isChild?: boolean }) => {
   const hasReplies = item.children && item.children.length > 0;
+  const [showReplies, setShowReplies] = useState(false);
+  const replyCount = countReplies(item);
 
   return (
     <div className="flex flex-col gap-2.5 transition-all">
@@ -351,9 +356,22 @@ const CommentCard = memo(({ item, theme, isChild = false }: { item: CommentItem;
         </div>
       </div>
 
-      {/* Render child replies */}
+      {/* Replies toggle */}
       {hasReplies && (
-        <div className={`flex flex-col gap-5 mt-4 pl-4 md:pl-[52px] border-l-[2px] ${theme === 'white' ? 'border-slate-100' : 'border-zinc-800/80'}`}>
+        <button
+          onClick={() => setShowReplies((prev) => !prev)}
+          className="flex items-center gap-1.5 pl-0 md:pl-[52px] text-[12px] font-bold text-accent-green hover:opacity-80 transition-opacity cursor-pointer w-fit"
+        >
+          {showReplies ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          <span>
+            {showReplies ? "Hide" : "View"} {replyCount} {replyCount === 1 ? "reply" : "replies"}
+          </span>
+        </button>
+      )}
+
+      {/* Render child replies */}
+      {hasReplies && showReplies && (
+        <div className={`flex flex-col gap-5 mt-2 pl-4 md:pl-[52px] border-l-[2px] ${theme === 'white' ? 'border-slate-100' : 'border-zinc-800/80'}`}>
           {item.children!.map((reply) => (
             <CommentCard key={reply.objectId} item={reply} theme={theme} isChild={true} />
           ))}

@@ -1,5 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Sort replies chronologically (oldest first, newest at the bottom), recursively.
+// Upstream returns replies in an arbitrary order, so we normalize it here.
+function sortChildrenAscending(comments: any[]): any[] {
+  const getTime = (c: any) => {
+    if (typeof c.time === "number") return c.time;
+    const parsed = new Date(c.time || 0).getTime();
+    return parsed || c.objectId || 0;
+  };
+
+  return comments.map((comment) => {
+    if (Array.isArray(comment.children) && comment.children.length > 0) {
+      const sorted = [...comment.children].sort((a, b) => getTime(a) - getTime(b));
+      return { ...comment, children: sortChildrenAscending(sorted) };
+    }
+    return comment;
+  });
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ chapterId: string }> }
@@ -7,29 +25,29 @@ export async function GET(
   try {
     const { chapterId } = await params;
     const { searchParams } = request.nextUrl;
-    
+
     const type = searchParams.get("type") || "chapter"; // "chapter" or "series"
     const provider = searchParams.get("provider") || "shinigami";
     const page = searchParams.get("page") || "1";
     const pageSize = searchParams.get("pageSize") || "10";
-    
+
     if (provider === "komikcast") {
       // 1. Get numeric series ID from the slug
       let slug = chapterId;
       let chapterNumber = "";
-      
+
       if (type === "chapter" && chapterId.includes("~")) {
         const parts = chapterId.split("~");
         slug = parts[0];
         chapterNumber = parts[1];
       }
-      
+
       const GAS_PROXY_URL = "https://script.google.com/macros/s/AKfycbxcSrY6mQ_hHBvsMk9Qs96BwK5vVImJg6h3zCMGHE3HEBS-g089sMO5wprVHk2bydTPTA/exec";
       const proxyUrl = (url: string) => {
         const isDev = process.env.NODE_ENV === "development";
         return isDev ? url : `${GAS_PROXY_URL}?url=${encodeURIComponent(url)}`;
       };
-      
+
       const seriesRes = await fetch(proxyUrl(`https://api.voratoon.com/series/${slug}?includeMeta=true`), {
         next: { revalidate: 3600 }
       });
@@ -39,9 +57,9 @@ export async function GET(
       if (!isDev && seriesJsonRaw.error) throw new Error(seriesJsonRaw.error);
       const seriesJson = seriesJsonRaw;
       const seriesNumericId = seriesJson.data?.id || seriesJson.id;
-      
+
       let endpoint = `https://api.voratoon.com/series/${seriesNumericId}/comments?take=${pageSize}&page=${page}`;
-      
+
       // 2. If it's a chapter, we need the numeric chapter ID
       if (type === "chapter" && chapterNumber) {
         const chaptersRes = await fetch(proxyUrl(`https://api.voratoon.com/series/${slug}/chapters`), {
@@ -51,18 +69,18 @@ export async function GET(
         if (!isDev && chaptersJsonRaw.error) throw new Error(chaptersJsonRaw.error);
         const chaptersJson = chaptersJsonRaw;
         const items = Array.isArray(chaptersJson.data) ? chaptersJson.data : (Array.isArray(chaptersJson) ? chaptersJson : []);
-        
+
         const foundChapter = items.find((c: any) => {
           const cNum = String(c.chapterIndex ?? c.data?.chapterIndex ?? c.data?.number ?? c.data?.index ?? "");
           return cNum === chapterNumber;
         });
-        
+
         if (foundChapter) {
           const chapterNumericId = foundChapter.id;
           endpoint += `&chapterId=${chapterNumericId}`;
         }
       }
-      
+
       console.log(`Proxying komikcast comment request to: ${endpoint}`);
       const commentsRes = await fetch(proxyUrl(endpoint));
       if (!commentsRes.ok) throw new Error(`Komikcast comments error: ${commentsRes.status}`);
@@ -70,13 +88,13 @@ export async function GET(
       if (!isDev && commentsJsonRaw.error) throw new Error(commentsJsonRaw.error);
       const commentsJson = commentsJsonRaw;
       const komikcastComments = commentsJson.data || [];
-      
+
       // Map komikcast comments to expected format
       const mappedComments = komikcastComments.map((c: any) => {
         const username = c.data?.user?.metadata?.username || c.data?.user?.fullName || "Anonymous";
         const avatarUrl = c.data?.user?.avatar || "";
         const time = new Date(c.createdAt).getTime();
-        
+
         return {
           status: "approved",
           comment: c.content,
@@ -97,7 +115,7 @@ export async function GET(
           children: []
         };
       });
-      
+
       return NextResponse.json({
         success: true,
         data: {
@@ -115,15 +133,15 @@ export async function GET(
     const sortBy = searchParams.get("sortBy") || "like_desc";
 
     const realId = (type === "chapter" && chapterId.includes("~"))
-      ? chapterId.split("~")[1] 
+      ? chapterId.split("~")[1]
       : (type === "chapter" && chapterId.includes("-chapter-"))
-        ? chapterId.split("-chapter-")[1] 
+        ? chapterId.split("-chapter-")[1]
         : chapterId;
 
     const targetUrl = `https://commento.shngm.io/api/comment?path=${prefix}${encodeURIComponent(realId)}&pageSize=${pageSize}&page=${page}&lang=en&sortBy=${sortBy}`;
-    
+
     console.log(`Proxying comment request to: ${targetUrl}`);
-    
+
     const response = await fetch(targetUrl, {
       headers: {
         "Accept": "application/json",
@@ -140,12 +158,12 @@ export async function GET(
   } catch (error: any) {
     console.error("Comments Proxy Error:", error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: { 
-          code: "COMMENTS_FAILED", 
-          message: error.message || "Failed to fetch comments from server" 
-        } 
+      {
+        success: false,
+        error: {
+          code: "COMMENTS_FAILED",
+          message: error.message || "Failed to fetch comments from server"
+        }
       },
       { status: 500 }
     );
