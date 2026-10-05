@@ -35,6 +35,7 @@ export type Chapter = {
   comicId: string;
   title?: string;
   chapterNumber?: string;
+  thumbnail?: string;
   language?: string;
   createdAt?: string;
   url?: string;

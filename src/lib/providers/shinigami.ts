@@ -137,12 +137,17 @@ export class ShinigamiProvider implements MangaProvider {
       if (!json.data || !Array.isArray(json.data)) return [];
 
       return json.data.map((item: any) => {
+        const rawThumb = item.thumbnail_image_url;
+        const isDefault = rawThumb && rawThumb.includes("default.jpg");
+        const thumbnail = isDefault ? "/logo.png" : (rawThumb || undefined);
+
         return {
           id: `${id}~${item.chapter_id}`,
           provider: "shinigami",
           comicId: id,
           title: item.chapter_title ? `Chapter ${item.chapter_number}: ${item.chapter_title}` : `Chapter ${item.chapter_number}`,
           chapterNumber: String(item.chapter_number),
+          thumbnail,
           createdAt: item.release_date 
             ? new Date(item.release_date).toLocaleDateString()
             : ""

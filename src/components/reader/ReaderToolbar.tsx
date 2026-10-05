@@ -27,6 +27,8 @@ export default function ReaderToolbar({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const activeItemRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -46,6 +48,23 @@ export default function ReaderToolbar({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Auto scroll to active chapter when dropdown opens
+  useEffect(() => {
+    if (isDropdownOpen) {
+      requestAnimationFrame(() => {
+        if (activeItemRef.current && menuRef.current) {
+          const menu = menuRef.current;
+          const item = activeItemRef.current;
+          const targetScroll = item.offsetTop - (menu.clientHeight / 2) + (item.clientHeight / 2);
+          menu.scrollTo({
+            top: Math.max(0, targetScroll),
+            behavior: "instant",
+          });
+        }
+      });
+    }
+  }, [isDropdownOpen]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -106,16 +125,30 @@ export default function ReaderToolbar({
         
         {/* Dropdown Menu */}
         {isDropdownOpen && (
-          <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 md:w-56 max-h-64 overflow-y-auto bg-surface/95 backdrop-blur-xl border border-border-dark/60 rounded-2xl shadow-xl z-50 py-2 scrollbar-thin scrollbar-thumb-border-dark/50 scrollbar-track-transparent">
-            {sortedChapters.map((ch) => (
-              <button
-                key={ch.id}
-                onClick={() => handleCustomChapterChange(ch.id)}
-                className={`w-full text-left px-4 py-2.5 text-xs font-semibold transition-colors hover:bg-surface-hover ${currentChapterId === ch.id ? 'bg-accent-green/10 text-accent-green' : 'text-foreground'}`}
-              >
-                Chapter {ch.chapterNumber}
-              </button>
-            ))}
+          <div 
+            ref={menuRef}
+            className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 md:w-56 max-h-64 overflow-y-auto bg-surface/95 backdrop-blur-xl border border-border-dark/60 rounded-2xl shadow-xl z-50 py-2 scrollbar-thin scrollbar-thumb-border-dark/50 scrollbar-track-transparent"
+          >
+            {sortedChapters.map((ch) => {
+              const isCurrent = currentChapterId === ch.id || (currentChapter && currentChapter.chapterNumber === ch.chapterNumber);
+              return (
+                <button
+                  key={ch.id}
+                  ref={isCurrent ? activeItemRef : null}
+                  onClick={() => handleCustomChapterChange(ch.id)}
+                  className={`w-full flex items-center justify-between px-4 py-2.5 text-xs transition-colors hover:bg-surface-hover ${
+                    isCurrent
+                      ? 'bg-accent-green/15 text-accent-green font-extrabold'
+                      : 'text-foreground font-semibold'
+                  }`}
+                >
+                  <span>Chapter {ch.chapterNumber}</span>
+                  {isCurrent && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent-green shadow-[0_0_8px_rgba(0,200,83,0.8)] shrink-0" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

@@ -179,9 +179,9 @@ function SearchContent() {
             type="text"
             placeholder={`Search comics, manhwa, manga on ${
               activeProvider === "shinigami" 
-                ? "Shinigami" 
+                ? "Server 1" 
                 : activeProvider === "komikcast" 
-                ? "Komikcast" 
+                ? "Server 2" 
                 : activeProvider
             }...`}
             value={inputVal}
