@@ -121,12 +121,14 @@ export default function ReaderPage({
         case "d":
           if (preferences.mode === "single") {
              setCurrentPageIndex((prev) => Math.min(pagesData?.pages.length ? pagesData.pages.length - 1 : 0, prev + 1));
+             window.scrollTo({ top: 0, behavior: "smooth" });
           }
           break;
         case "arrowleft":
         case "a":
           if (preferences.mode === "single") {
              setCurrentPageIndex((prev) => Math.max(0, prev - 1));
+             window.scrollTo({ top: 0, behavior: "smooth" });
           }
           break;
         case "f":
@@ -393,26 +395,40 @@ export default function ReaderPage({
           </div>
         ) : (
           /* Manga Mode: Single Page pagination clicker */
-          <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-6 py-4 px-2">
+          <div className={`w-full mx-auto flex flex-col items-center gap-6 py-4 px-2 ${getWidthClass()}`}>
             
             {/* Image display */}
-            <div className="relative w-full max-w-[700px] aspect-[2/3] bg-surface-hover/40 rounded-2xl overflow-hidden border border-border-dark/20 flex items-center justify-center">
+            <div className="relative w-full bg-surface-hover/30 rounded-2xl overflow-hidden border border-border-dark/20 flex items-center justify-center min-h-[400px]">
               <img
                 src={pagesData.pages[currentPageIndex]}
                 alt={`Page ${currentPageIndex + 1}`}
                 referrerPolicy="no-referrer"
-                className="max-h-full max-w-full object-contain blur-sm transition-[filter] duration-300"
-                onLoad={(e) => e.currentTarget.classList.remove('blur-sm')}
+                className="w-full h-auto block object-contain blur-sm transition-[filter] duration-300"
+                onLoad={(e) => {
+                  e.currentTarget.classList.remove('blur-sm');
+                  e.currentTarget.parentElement?.classList.remove('min-h-[400px]');
+                }}
+                onError={(e) => {
+                  const imgTarget = e.currentTarget;
+                  imgTarget.onerror = null;
+                  imgTarget.src = "https://images.unsplash.com/photo-1594322436404-5a0526db4d13?w=800&auto=format&fit=crop&q=80";
+                }}
               />
               
               {/* Invisible click targets */}
               <div 
                 className="absolute left-0 top-0 bottom-0 w-1/3 cursor-w-resize" 
-                onClick={() => setCurrentPageIndex((prev) => Math.max(0, prev - 1))}
+                onClick={() => {
+                  setCurrentPageIndex((prev) => Math.max(0, prev - 1));
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
               />
               <div 
                 className="absolute right-0 top-0 bottom-0 w-1/3 cursor-e-resize" 
-                onClick={() => setCurrentPageIndex((prev) => Math.min(pagesData.pages.length - 1, prev + 1))}
+                onClick={() => {
+                  setCurrentPageIndex((prev) => Math.min(pagesData.pages.length - 1, prev + 1));
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
               />
             </div>
 
@@ -420,7 +436,10 @@ export default function ReaderPage({
             <div className="flex items-center gap-4 text-xs font-semibold">
               <button
                 disabled={currentPageIndex === 0}
-                onClick={() => setCurrentPageIndex((prev) => prev - 1)}
+                onClick={() => {
+                  setCurrentPageIndex((prev) => prev - 1);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
                 className="p-2.5 h-10 rounded-xl bg-surface hover:bg-surface-hover border border-border-dark text-foreground disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -432,7 +451,10 @@ export default function ReaderPage({
 
               <button
                 disabled={currentPageIndex === pagesData.pages.length - 1}
-                onClick={() => setCurrentPageIndex((prev) => prev + 1)}
+                onClick={() => {
+                  setCurrentPageIndex((prev) => prev + 1);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
                 className="p-2.5 h-10 rounded-xl bg-surface hover:bg-surface-hover border border-border-dark text-foreground disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
               >
                 <ArrowRight className="h-4 w-4" />
