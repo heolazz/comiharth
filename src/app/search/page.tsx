@@ -115,7 +115,11 @@ function SearchContent() {
   };
 
   const handlePageChange = (newPage: number) => {
+    if (newPage === currentPage || newPage < 1) return;
+    if (totalPages && newPage > totalPages) return;
+    setCurrentPage(newPage);
     router.push(`/search?q=${encodeURIComponent(query)}&provider=${activeProvider}&page=${newPage}&format=${selectedType}&genre=${selectedGenre}&status=${selectedStatus}&sort=${sortBy}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleTypeChange = (t: string) => {
@@ -151,8 +155,58 @@ function SearchContent() {
     return count;
   }, [selectedType, selectedGenre, selectedStatus, sortBy]);
 
-  // Dynamic Pagination Boundary: Shinigami serves 24 items per page
-  const hasNextPage = results.length === 24;
+  // Dynamic Pagination Calculations
+  const ITEMS_PER_PAGE = 24;
+
+  const totalPages = useMemo(() => {
+    if (totalCount && totalCount > 0) {
+      return Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
+    }
+    // Fallback if totalCount is not provided:
+    return results.length === ITEMS_PER_PAGE ? Math.max(currentPage + 4, 5) : currentPage;
+  }, [totalCount, results.length, currentPage]);
+
+  const hasNextPage = currentPage < totalPages && results.length > 0;
+  const hasPrevPage = currentPage > 1;
+
+  // Smart page numbers generation (1, 2, 3, 4, 5, ..., totalPages)
+  const pageNumbers = useMemo(() => {
+    const pages: (number | string)[] = [];
+
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+      return pages;
+    }
+
+    if (currentPage <= 4) {
+      // Near start: 1, 2, 3, 4, 5, "...", totalPages
+      for (let i = 1; i <= 5; i++) {
+        pages.push(i);
+      }
+      pages.push("...");
+      pages.push(totalPages);
+    } else if (currentPage >= totalPages - 3) {
+      // Near end: 1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages
+      pages.push(1);
+      pages.push("...");
+      for (let i = totalPages - 4; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Middle: 1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages
+      pages.push(1);
+      pages.push("...");
+      pages.push(currentPage - 1);
+      pages.push(currentPage);
+      pages.push(currentPage + 1);
+      pages.push("...");
+      pages.push(totalPages);
+    }
+
+    return pages;
+  }, [totalPages, currentPage]);
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 md:px-8 py-10 flex flex-col gap-8 transition-colors duration-300">
@@ -395,8 +449,15 @@ function SearchContent() {
           <span className="text-accent-green uppercase font-extrabold">{activeProvider}</span>
         </div>
 
-        <div>
-          Found <span className="text-foreground font-extrabold">{totalCount ? (totalCount >= 1000 ? "1000+" : totalCount) : results.length}</span> titles
+        <div className="flex items-center gap-2">
+          <span>
+            Found <span className="text-foreground font-extrabold">{totalCount ? (totalCount >= 1000 ? "1000+" : totalCount) : results.length}</span> titles
+          </span>
+          {totalPages > 1 && (
+            <span className="hidden sm:inline text-muted-text/60 font-medium">
+              • Page {currentPage} of {totalPages}
+            </span>
+          )}
         </div>
       </div>
 
@@ -417,40 +478,95 @@ function SearchContent() {
           <p className="text-xs text-zinc-500 font-medium">
             Try adjusting your active filters or clear them to view more items.
           </p>
+          {currentPage > 1 && (
+            <button
+              onClick={() => handlePageChange(1)}
+              className="mt-3 px-4 py-2 rounded-xl bg-accent-green text-white text-xs font-bold hover:bg-green-600 transition-all cursor-pointer"
+            >
+              Back to Page 1
+            </button>
+          )}
         </div>
       ) : (
         <>
           <ComicGrid comics={results} />
 
           {/* Premium Pagination Component Shelf */}
-          <div className="mt-8 flex items-center justify-center gap-4 border-t border-border-dark/20 pt-8">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 border-t border-border-dark/20 pt-8">
+            {/* Previous Page Button */}
             <button
               onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage <= 1 || isLoading}
-              className={`flex items-center gap-1.5 h-10 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                currentPage <= 1
+              disabled={!hasPrevPage || isLoading}
+              aria-label="Previous Page"
+              className={`flex items-center justify-center gap-1.5 h-10 px-3 sm:px-4 rounded-xl border text-xs font-bold transition-all ${
+                !hasPrevPage || isLoading
                   ? "opacity-40 bg-zinc-100/5 text-zinc-500 border-zinc-200/10 cursor-not-allowed"
-                  : "bg-surface border-border-dark/60 text-foreground hover:text-accent-green hover:border-accent-green/30"
+                  : "bg-surface border-border-dark/60 text-foreground hover:text-accent-green hover:border-accent-green/40 hover:bg-surface-hover cursor-pointer active:scale-95"
               }`}
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              <span className="hidden sm:inline">Previous</span>
             </button>
 
-            <span className="flex h-10 px-4 items-center justify-center rounded-xl bg-surface border border-border-dark/40 text-xs font-bold text-foreground">
-              Page {currentPage}
-            </span>
+            {/* Page Number Buttons */}
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              {pageNumbers.map((p, idx) => {
+                if (typeof p === "string") {
+                  // Determine whether ellipsis is before or after currentPage
+                  const isBeforeCurrent = idx < pageNumbers.indexOf(currentPage);
+                  const jumpTarget = isBeforeCurrent
+                    ? Math.max(1, currentPage - 5)
+                    : Math.min(totalPages, currentPage + 5);
 
+                  return (
+                    <button
+                      key={`ellipsis-${idx}`}
+                      onClick={() => handlePageChange(jumpTarget)}
+                      disabled={isLoading}
+                      title={isBeforeCurrent ? "Jump 5 pages back" : "Jump 5 pages forward"}
+                      className="group flex h-10 w-8 sm:w-10 items-center justify-center rounded-xl text-xs font-bold text-muted-text/60 hover:text-accent-green hover:bg-surface hover:border hover:border-border-dark/60 transition-all cursor-pointer"
+                    >
+                      <span className="group-hover:hidden">...</span>
+                      <span className="hidden group-hover:inline text-xs font-black">
+                        {isBeforeCurrent ? "«" : "»"}
+                      </span>
+                    </button>
+                  );
+                }
+
+                const isActive = p === currentPage;
+                return (
+                  <button
+                    key={`page-${p}`}
+                    onClick={() => handlePageChange(p)}
+                    disabled={isActive || isLoading}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`flex h-10 min-w-9 sm:min-w-10 px-2.5 sm:px-3.5 items-center justify-center rounded-xl text-xs font-bold transition-all ${
+                      isActive
+                        ? "bg-accent-green text-white font-extrabold shadow-md shadow-accent-green/20 cursor-default"
+                        : isLoading
+                        ? "opacity-40 bg-surface border border-border-dark/60 text-muted-text cursor-not-allowed"
+                        : "bg-surface border border-border-dark/60 text-muted-text hover:text-foreground hover:border-accent-green/40 hover:bg-surface-hover cursor-pointer active:scale-95"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Next Page Button */}
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={!hasNextPage || isLoading}
-              className={`flex items-center gap-1.5 h-10 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                !hasNextPage
+              aria-label="Next Page"
+              className={`flex items-center justify-center gap-1.5 h-10 px-3 sm:px-4 rounded-xl border text-xs font-bold transition-all ${
+                !hasNextPage || isLoading
                   ? "opacity-40 bg-zinc-100/5 text-zinc-500 border-zinc-200/10 cursor-not-allowed"
-                  : "bg-surface border-border-dark/60 text-foreground hover:text-accent-green hover:border-accent-green/30"
+                  : "bg-surface border-border-dark/60 text-foreground hover:text-accent-green hover:border-accent-green/40 hover:bg-surface-hover cursor-pointer active:scale-95"
               }`}
             >
-              Next
+              <span className="hidden sm:inline">Next</span>
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
